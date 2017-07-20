@@ -76,7 +76,10 @@ func (a Basic2TokenAuth) Auth(user, password string, origRequest *http.Request) 
 		panic(fmt.Sprintf("Error when getting token for %s: %s", user, err.Error()))
 		return false
 	}
-	if resp.StatusCode < 200 || resp.StatusCode >= 299 {
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		if resp.StatusCode == 401 || resp.StatusCode == 403 {
+			return false
+		}
 		b, _ := ioutil.ReadAll(resp.Body)
 		panic(fmt.Sprintf("Error from oauth server %d: %s", resp.StatusCode, string(b)))
 		return false
