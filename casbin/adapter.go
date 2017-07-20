@@ -4,6 +4,7 @@ import (
 	"github.com/casbin/casbin/model"
 	"net/http"
 	"github.com/orange-cloudfoundry/gobis"
+	"errors"
 )
 
 type GobisAdapter struct {
@@ -36,12 +37,15 @@ func (a *GobisAdapter) loadPolicy(policy CasbinPolicy, model model.Model) error 
 	)
 	return nil
 }
+
 func (a GobisAdapter) SavePolicy(model model.Model) error {
 	return nil
 }
+
 func (a *GobisAdapter) AddPolicies(policies ...CasbinPolicy) {
 	a.policies = append(a.policies, policies...)
 }
+
 func (a *GobisAdapter) AddPoliciesFromRequest(req *http.Request) {
 	user := gobis.Username(req)
 	groups := gobis.Groups(req)
@@ -60,4 +64,16 @@ func (a *GobisAdapter) AddPoliciesFromRequest(req *http.Request) {
 	for _, ctxPolicy := range *ctxPolicies {
 		a.AddPolicies(ctxPolicy)
 	}
+}
+
+func (a *GobisAdapter) AddPolicy(sec string, ptype string, policy []string) error {
+	return errors.New("not implemented")
+}
+
+func (a *GobisAdapter) RemovePolicy(sec string, ptype string, policy []string) error {
+	return errors.New("not implemented")
+}
+
+func (a *GobisAdapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int, fieldValues ...string) error {
+	return errors.New("not implemented")
 }
