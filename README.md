@@ -1,6 +1,6 @@
 # Gobis-middlewares [![GoDoc](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares?status.svg)](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares)
 
-This is a set of middlewares created for [gobis](https://github.com/orange-cloudfoundry/gobis) useable on your on proect containing gobis.
+This is a set of middlewares created for [gobis](https://github.com/orange-cloudfoundry/gobis) useable on your on project containing gobis.
  
 Use it by import in this way:
 
