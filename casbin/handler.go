@@ -5,7 +5,6 @@ import (
 	"github.com/casbin/casbin/persist"
 	"github.com/orange-cloudfoundry/gobis"
 	"net/http"
-	"github.com/mitchellh/mapstructure"
 	"strings"
 	log "github.com/sirupsen/logrus"
 )
@@ -54,14 +53,18 @@ func newEnforcer(adapter persist.Adapter, modelConfText string) *casbin.Enforcer
 	return casbin.NewEnforcer(modelConf, adapter, enableLog)
 }
 
-func Casbin(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config CasbinConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+type Casbin struct{}
+
+func NewCasbin() *Casbin {
+	return &Casbin{}
+}
+func (Casbin) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(CasbinConfig)
 	if config.Casbin == nil || !config.Casbin.Enable {
 		return handler, nil
 	}
 	return NewCasbinHandler(handler, config.Casbin), nil
+}
+func (Casbin) Schema() interface{} {
+	return CasbinConfig{}
 }

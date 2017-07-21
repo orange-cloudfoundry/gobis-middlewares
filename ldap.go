@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"fmt"
 	"crypto/tls"
-	"github.com/mitchellh/mapstructure"
 	"github.com/orange-cloudfoundry/gobis"
 	"os"
 	"github.com/goji/httpauth"
@@ -133,12 +132,13 @@ func (l LdapAuth) LoadLdapGroup(user string, conn *ldap.Conn, req *http.Request)
 	return nil
 }
 
-func Ldap(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config LdapConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+type Ldap struct{}
+
+func NewLdap() *Ldap {
+	return &Ldap{}
+}
+func (Ldap) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(LdapConfig)
 	options := config.Ldap
 	if options == nil || !options.Enable {
 		return handler, nil
@@ -171,4 +171,7 @@ func Ldap(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, erro
 	return httpauth.BasicAuth(httpauth.AuthOptions{
 		AuthFunc: ldapAuth.LdapAuth,
 	})(handler), nil
+}
+func (Ldap) Schema() interface{} {
+	return LdapConfig{}
 }

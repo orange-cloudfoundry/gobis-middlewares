@@ -4,7 +4,6 @@ import (
 	"github.com/orange-cloudfoundry/gobis"
 	"net/http"
 	"github.com/rs/cors"
-	"github.com/mitchellh/mapstructure"
 )
 
 type CorsConfig struct {
@@ -40,12 +39,13 @@ type CorsOptions struct {
 	OptionsPassthrough bool `mapstructure:"options_passthrough" json:"options_passthrough" yaml:"options_passthrough"`
 }
 
-func Cors(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var corsStruct CorsConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &corsStruct)
-	if err != nil {
-		return handler, err
-	}
+type Cors struct{}
+
+func NewCors() *Cors {
+	return &Cors{}
+}
+func (Cors) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	corsStruct := params.(CorsConfig)
 	corsOptions := corsStruct.Cors
 	if corsOptions == nil {
 		return handler, nil
@@ -63,4 +63,7 @@ func Cors(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, erro
 		OptionsPassthrough: corsOptions.OptionsPassthrough,
 	})
 	return corsHandler.Handler(handler), nil
+}
+func (Cors) Schema() interface{} {
+	return CorsConfig{}
 }

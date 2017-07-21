@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/orange-cloudfoundry/gobis"
 	"net/http"
 	"github.com/vulcand/oxy/ratelimit"
@@ -24,13 +23,13 @@ type RateLimitOptions struct {
 	// for context see: https://godoc.org/github.com/orange-cloudfoundry/gobis/proxy/ctx#Username
 	SourceIdentifier string `mapstructure:"source_identifier" json:"source_identifier" yaml:"source_identifier"`
 }
+type RateLimit struct{}
 
-func RateLimit(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config RateLimitConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+func NewRateLimit() *RateLimit {
+	return &RateLimit{}
+}
+func (RateLimit) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(RateLimitConfig)
 	options := config.RateLimit
 	if options == nil || !options.Enable {
 		return handler, nil
@@ -52,4 +51,7 @@ func RateLimit(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler,
 		return handler, err
 	}
 	return limitHandler, nil
+}
+func (RateLimit) Schema() interface{} {
+	return RateLimitConfig{}
 }

@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/orange-cloudfoundry/gobis"
 	"net/http"
 	"github.com/vulcand/oxy/trace"
@@ -19,13 +18,13 @@ type TraceOptions struct {
 	// add response headers to capture
 	ResponseHeaders []string `mapstructure:"response_headers" json:"response_headers" yaml:"response_headers"`
 }
+type Trace struct{}
 
-func Trace(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config TraceConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+func NewTrace() *Trace {
+	return &Trace{}
+}
+func (Trace) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(TraceConfig)
 	options := config.Trace
 	if options == nil || !options.Enable {
 		return handler, nil
@@ -42,4 +41,7 @@ func Trace(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, err
 		return handler, err
 	}
 	return traceHandler, err
+}
+func (Trace) Schema() interface{} {
+	return TraceConfig{}
 }

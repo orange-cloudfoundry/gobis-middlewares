@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"fmt"
 	"github.com/orange-cloudfoundry/gobis"
-	"github.com/mitchellh/mapstructure"
 	"github.com/goji/httpauth"
 	"crypto/tls"
 )
@@ -130,12 +129,13 @@ func (a Basic2TokenAuth) generateJsonBody(user, password string) (io.Reader, str
 	return bytes.NewReader(b), "application/json"
 }
 
-func Basic2Token(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config Basic2TokenConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+type Basic2Token struct{}
+
+func NewBasic2Token() *Basic2Token {
+	return &Basic2Token{}
+}
+func (h Basic2Token) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(Basic2TokenConfig)
 	options := config.Basic2Token
 	if options == nil {
 		return handler, nil
@@ -146,7 +146,7 @@ func Basic2Token(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handle
 	if options.ClientId == "" {
 		return handler, fmt.Errorf("client id cannot be empty")
 	}
-	_, err = url.Parse(options.AccessTokenUri)
+	_, err := url.Parse(options.AccessTokenUri)
 	if err != nil {
 		return handler, err
 	}
@@ -173,4 +173,7 @@ func Basic2Token(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handle
 			AuthFunc: basic2TokenAuth.Auth,
 		})(handler).ServeHTTP(w, req)
 	}), nil
+}
+func (h Basic2Token) Schema() interface{} {
+	return Basic2TokenConfig{}
 }

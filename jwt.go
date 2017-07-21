@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/mitchellh/mapstructure"
 	"fmt"
 	"regexp"
 	"strings"
@@ -36,12 +35,13 @@ type JwtOptions struct {
 	CustomVerify        map[string]string `mapstructure:"custom_verify" json:"custom_verify" yaml:"custom_verify"`
 }
 
-func Jwt(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config JwtConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+type Jwt struct{}
+
+func NewJwt() *Jwt {
+	return &Jwt{}
+}
+func (Jwt) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(JwtConfig)
 	options := config.Jwt
 	if options == nil || !options.Enable {
 		return handler, nil
@@ -74,6 +74,9 @@ func Jwt(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error
 		Debug: log.GetLevel() == log.DebugLevel,
 	})
 	return NewJwtHandler(jwtMiddleware, handler), nil
+}
+func (Jwt) Schema() interface{} {
+	return JwtConfig{}
 }
 
 type JwtHandler struct {

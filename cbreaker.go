@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/orange-cloudfoundry/gobis"
 	"net/http"
 	"github.com/vulcand/oxy/cbreaker"
@@ -31,13 +30,13 @@ type CircuitBreakerOptions struct {
 	// checks of the breaker condition.
 	CheckPeriod      int64 `mapstructure:"check_period" json:"check_period" yaml:"check_period"`
 }
+type CircuitBreaker struct{}
 
-func CircuitBreaker(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config CircuitBreakerConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+func NewCircuitBreaker() *CircuitBreaker {
+	return &CircuitBreaker{}
+}
+func (CircuitBreaker) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(CircuitBreakerConfig)
 	options := config.CircuitBreaker
 	if options == nil || !options.Enable {
 		return handler, nil
@@ -82,4 +81,7 @@ func CircuitBreaker(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Han
 	}
 
 	return finalHandler, nil
+}
+func (CircuitBreaker) Schema() interface{} {
+	return CircuitBreakerConfig{}
 }

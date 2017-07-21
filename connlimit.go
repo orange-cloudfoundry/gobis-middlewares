@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/orange-cloudfoundry/gobis"
 	"net/http"
 	"github.com/vulcand/oxy/connlimit"
@@ -23,12 +22,13 @@ type ConnLimitOptions struct {
 	SourceIdentifier string `mapstructure:"source_identifier" json:"source_identifier" yaml:"source_identifier"`
 }
 
-func ConnLimit(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config ConnLimitConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+type ConnLimit struct{}
+
+func NewConnLimit() *ConnLimit {
+	return &ConnLimit{}
+}
+func (ConnLimit) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(ConnLimitConfig)
 	options := config.ConnLimit
 	if options == nil || !options.Enable {
 		return handler, nil
@@ -45,4 +45,7 @@ func ConnLimit(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler,
 		return handler, err
 	}
 	return finalHandler, nil
+}
+func (ConnLimit) Schema() interface{} {
+	return ConnLimitConfig{}
 }

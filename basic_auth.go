@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/orange-cloudfoundry/gobis"
 	"github.com/goji/httpauth"
 	"net/http"
@@ -63,16 +62,21 @@ func (b BasicAuthOptions) findByUser(user string) BasicAuthOption {
 	}
 	return BasicAuthOption{}
 }
-func BasicAuth(proxyRoute gobis.ProxyRoute, handler http.Handler) (http.Handler, error) {
-	var config BasicAuthConfig
-	err := mapstructure.Decode(proxyRoute.ExtraParams, &config)
-	if err != nil {
-		return handler, err
-	}
+
+type BasicAuth struct{}
+
+func NewBasicAuth() *BasicAuth {
+	return &BasicAuth{}
+}
+func (BasicAuth) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
+	config := params.(BasicAuthConfig)
 	if len(config.BasicAuth) == 0 {
 		return handler, nil
 	}
 	return httpauth.BasicAuth(httpauth.AuthOptions{
 		AuthFunc: config.BasicAuth.Auth,
 	})(handler), nil
+}
+func (BasicAuth) Schema() interface{} {
+	return BasicAuthConfig{}
 }

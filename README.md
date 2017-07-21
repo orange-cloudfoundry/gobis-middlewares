@@ -46,7 +46,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.Basic2TokenConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.Basic2TokenConfig{
                         Ldap: &middlewares.Basic2TokenOptions{
                                 Enable: true,
                                 AccessTokenUri: "https://my.uaa.local/oauth/token",
@@ -60,14 +60,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewBasic2Token()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   basic2token:
     enable: true
     access_token_uri: https://my.uaa.local/oauth/token
@@ -99,7 +99,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.BasicAuthConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.BasicAuthConfig{
                         BasicAuth: &middlewares.BasicAuthOptions{
                                 {
                                         User: "user",
@@ -116,14 +116,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewBasicAuth()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   basic_auth:
   - user: user
     password: $2y$12$AHKssZrkmcG2pmom.rvy2OMsV8HpMHHcRIEY158LgZIkrA0BFvFQq # equal password
@@ -157,7 +157,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(casbin.CasbinConfig{
+                MiddlewareParams: gobis.InterfaceToMap(casbin.CasbinConfig{
                         CircuitBreaker: &casbin.CasbinOption{
                                 Enable: true,
                                 Policies: []casbin.CasbinPolicy{
@@ -171,14 +171,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(casbin.NewCasbin()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   casbin:
     enable: true
     policies:
@@ -206,7 +206,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.CircuitBreakerConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.CircuitBreakerConfig{
                         CircuitBreaker: &middlewares.CircuitBreakerOptions{
                                 Enable: true,
                                 Expression: "NetworkErrorRatio() < 0.5",
@@ -216,14 +216,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewCircuitBreaker()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   circuit_breaker:
     enable: true
     expression: NetworkErrorRatio() < 0.5
@@ -246,7 +246,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.ConnLimitConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.ConnLimitConfig{
                         ConnLimit: &middlewares.ConnLimitOptions{
                                 Enable: true,
                         },
@@ -254,14 +254,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewConnLimit()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   conn_limit:
     enable: true
 ```
@@ -281,7 +281,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.CorsConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.CorsConfig{
                         Cors: &middlewares.CorsOptions{
                                 AllowedOrigins: []string{"http://localhost"},
                         },
@@ -289,14 +289,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewCors()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   cors:
     max_age: 12
     allowed_origins:
@@ -318,7 +318,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.JwtConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.JwtConfig{
                         Ldap: &middlewares.JwtOptions{
                                 Enable: true,
                                 Alg: "RS256", // this is mandatory due to security issue: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries
@@ -329,14 +329,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewJwt()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   jwt:
     enable: true
     alg: RS256
@@ -364,7 +364,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.LdapConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.LdapConfig{
                         Ldap: &middlewares.LdapOptions{
                                 Enable: true,
                                 BindDn: "uid=readonly,dc=com",
@@ -381,14 +381,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := handlers.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewLdap()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   ldap:
     enable: true
     bind_dn: uid=readonly,dc=com
@@ -422,7 +422,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.RateLimitConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.RateLimitConfig{
                         RateLimit: &middlewares.RateLimitOptions{
                                 Enable: true,
                         },
@@ -430,14 +430,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewRateLimit()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   rate_limit:
     enable: true
 ```
@@ -457,7 +457,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                ExtraParams: gobis.InterfaceToMap(middlewares.TraceConfig{
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.TraceConfig{
                         Trace: &middlewares.TraceOptions{
                                 Enable: true,
                         },
@@ -465,14 +465,14 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewCors()))
 // create your server
 ```
 
 ### Use in config file
 
 ```yaml
-extra_params:
+middleware_params:
   trace:
     enable: true
 ```
