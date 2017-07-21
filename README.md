@@ -303,6 +303,52 @@ extra_params:
     - http://localhost
 ```
 
+## Jwt
+
+Verify a JWT token with its secret/pubkey and can give scopes as groups through [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups) to use it in others middlewares
+
+See godoc for [JwtOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#JwtOptions) to know more about parameters.
+
+### Use programmatically
+
+```go
+configHandler := gobis.DefaultHandlerConfig{
+        Routes: []gobis.ProxyRoute{
+            {
+                Name: "myapi",
+                Path: "/app/**",
+                Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
+                ExtraParams: gobis.InterfaceToMap(middlewares.JwtConfig{
+                        Ldap: &middlewares.JwtOptions{
+                                Enable: true,
+                                Alg: "RS256", // this is mandatory due to security issue: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries
+                                Secret: "hmac secret or ECDSA/RSA public key", 
+                                Issuer: "https://issuer.which.sign.token.com",
+                        },
+                }),
+            },
+        },
+}
+gobisHandler, err := gobis.NewDefaultHandler(configHandler)
+// create your server
+```
+
+### Use in config file
+
+```yaml
+extra_params:
+  jwt:
+    enable: true
+    alg: RS256
+    secret: hmac secret or ECDSA/RSA public key
+    issuer: https://issuer.which.sign.token.com
+```
+
+### Tips
+
+- If key `scope.*` is found in the jwt token, thoses scopes will be loaded as groups and others middlewares will
+ be able to find groups for the current user by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
+
 ## Ldap
 
 Add basic authentiation based on ldap to upstream
