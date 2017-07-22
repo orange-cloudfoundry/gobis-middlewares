@@ -102,31 +102,31 @@ go get github.com/casbin/casbin
 
 1. New a Casbin enforcer with a model file and a policy file:
 
-```go
-e := casbin.NewEnforcer("path/to/model.conf", "path/to/policy.csv")
-```
+    ```go
+    e := casbin.NewEnforcer("path/to/model.conf", "path/to/policy.csv")
+    ```
 
 Note: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#persistence) section for details.
 
 2. Add an enforcement hook into your code right before the access happens:
 
-```go
-sub := "alice" // the user that wants to access a resource.
-obj := "data1" // the resource that is going to be accessed.
-act := "read" // the operation that the user performs on the resource.
+    ```go
+    sub := "alice" // the user that wants to access a resource.
+    obj := "data1" // the resource that is going to be accessed.
+    act := "read" // the operation that the user performs on the resource.
 
-if e.Enforce(sub, obj, act) == true {
-    // permit alice to read data1
-} else {
-    // deny the request, show an error
-}
-```
+    if e.Enforce(sub, obj, act) == true {
+        // permit alice to read data1
+    } else {
+        // deny the request, show an error
+    }
+    ```
 
 3. Besides the static policy file, Casbin also provides API for permission management at run-time. For example, You can get all the roles assigned to a user as below:
 
-```go
-roles := e.GetRoles("alice")
-```
+    ```go
+    roles := e.GetRoles("alice")
+    ```
 
 Note: we provide two sets of APIs to manage permissions:
 
@@ -145,13 +145,12 @@ In Casbin, the policy storage is implemented as an adapter (aka middleware for C
 
 Adapter | Type | Author | Description
 ----|------|----|----
-[File Adapter (built-in)](#file-adapter) | File | Casbin | Persistence for [.CSV (Comma-Separated Values)](https://en.wikipedia.org/wiki/Comma-separated_values) files
-[MySQL Adapter](https://github.com/casbin/mysql-adapter) | RDBMS | Casbin | Persistence for [MySQL](https://www.mysql.com)
+[File Adapter (built-in)](https://github.com/casbin/casbin/wiki/Policy-persistence#file-adapter) | File | Casbin | Persistence for [.CSV (Comma-Separated Values)](https://en.wikipedia.org/wiki/Comma-separated_values) files
+[Xorm Adapter](https://github.com/casbin/xorm-adapter) | ORM | Casbin | MySQL, PostgreSQL, TiDB, SQLite, SQL Server, Oracle are supported by [Xorm](https://github.com/go-xorm/xorm/)
 [Cassandra Adapter](https://github.com/casbin/cassandra-adapter) | NoSQL | Casbin | Persistence for [Apache Cassandra DB](http://cassandra.apache.org)
 [Consul Adapter](https://github.com/ankitm123/consul-adapter) | KV store | [@ankitm123](https://github.com/ankitm123) | Persistence for [HashiCorp Consul](https://www.consul.io/)
 [Redis Adapter](https://github.com/ankitm123/redis-adapter) | KV store | [@ankitm123](https://github.com/ankitm123) | Persistence for [Redis](https://redis.io/)
 [Protobuf Adapter](https://github.com/casbin/protobuf-adapter) | Stream | Casbin | Persistence for [Google Protocol Buffers](https://developers.google.com/protocol-buffers/)
-[Xorm Adapter](https://github.com/casbin/xorm-adapter) | ORM | Casbin | MySQL, PostgreSQL, TiDB, SQLite, SQL Server, Oracle are supported by [Xorm](https://github.com/go-xorm/xorm/)
 
 For details of adapters, please refer to the documentation: https://github.com/casbin/casbin/wiki/Policy-persistence
 
@@ -186,6 +185,7 @@ Priority | [priority_model.conf](https://github.com/casbin/casbin/blob/master/ex
 - [Chi](https://github.com/pressly/chi): A lightweight, idiomatic and composable router for building HTTP services, via plugin: [chi-authz](https://github.com/casbin/chi-authz)
 - [Macaron](https://github.com/go-macaron/macaron): A high productive and modular web framework in Go, via plugin: [authz](https://github.com/go-macaron/authz)
 - [DotWeb](https://github.com/devfeel/dotweb): Simple and easy go web micro framework, via plugin: [authz](https://github.com/devfeel/middleware/tree/master/authz)
+- [Baa](https://github.com/go-baa/baa): An express Go web framework with routing, middleware, dependency injection and http context, via plugin: [authz](https://github.com/baa-middleware/authz)
 
 ### Others
 

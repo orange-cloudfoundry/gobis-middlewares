@@ -28,15 +28,15 @@ func (e *Enforcer) GetUsersForRole(name string) []string {
 func (e *Enforcer) HasRoleForUser(name string, role string) bool {
 	roles := e.GetRolesForUser(name)
 
-	has_role := false
+	hasRole := false
 	for _, r := range roles {
 		if r == role {
-			has_role = true
+			hasRole = true
 			break
 		}
 	}
 
-	return has_role
+	return hasRole
 }
 
 // AddRoleForUser adds a role for a user.
@@ -74,9 +74,9 @@ func (e *Enforcer) DeletePermission(permission ...string) {
 // AddPermissionForUser adds a permission for a user or role.
 // Returns false if the user or role already has the permission.
 func (e *Enforcer) AddPermissionForUser(user string, permission ...string) bool {
-	params := make([]interface{}, 0, len(permission) + 1)
+	params := make([]interface{}, 0, len(permission)+1)
 
-	params= append(params, user)
+	params = append(params, user)
 	for _, perm := range permission {
 		params = append(params, perm)
 	}
@@ -86,9 +86,9 @@ func (e *Enforcer) AddPermissionForUser(user string, permission ...string) bool 
 
 // DeletePermissionForUser deletes a permission for a user or role.
 func (e *Enforcer) DeletePermissionForUser(user string, permission ...string) {
-	params := make([]interface{}, 0, len(permission) + 1)
+	params := make([]interface{}, 0, len(permission)+1)
 
-	params= append(params, user)
+	params = append(params, user)
 	for _, perm := range permission {
 		params = append(params, perm)
 	}
@@ -108,9 +108,9 @@ func (e *Enforcer) GetPermissionsForUser(user string) [][]string {
 
 // HasPermissionForUser determines whether a user has a permission.
 func (e *Enforcer) HasPermissionForUser(user string, permission ...string) bool {
-	params := make([]interface{}, 0, len(permission) + 1)
+	params := make([]interface{}, 0, len(permission)+1)
 
-	params= append(params, user)
+	params = append(params, user)
 	for _, perm := range permission {
 		params = append(params, perm)
 	}

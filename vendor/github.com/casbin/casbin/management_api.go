@@ -62,106 +62,115 @@ func (e *Enforcer) GetFilteredGroupingPolicy(fieldIndex int, fieldValues ...stri
 func (e *Enforcer) HasPolicy(params ...interface{}) bool {
 	if len(params) == 1 && reflect.TypeOf(params[0]).Kind() == reflect.Slice {
 		return e.model.HasPolicy("p", "p", params[0].([]string))
-	} else {
-		policy := make([]string, 0)
-		for _, param := range params {
-			policy = append(policy, param.(string))
-		}
-
-		return e.model.HasPolicy("p", "p", policy)
 	}
+
+	policy := make([]string, 0)
+	for _, param := range params {
+		policy = append(policy, param.(string))
+	}
+
+	return e.model.HasPolicy("p", "p", policy)
 }
 
 // AddPolicy adds an authorization rule to the current policy.
-// If you try to add an existing policy, the call fails and returns false.
+// If the rule already exists, the function returns false and the rule will not be added.
+// Otherwise the function returns true by adding the new rule.
 func (e *Enforcer) AddPolicy(params ...interface{}) bool {
-	res := false
+	ruleAdded := false
 	if len(params) == 1 && reflect.TypeOf(params[0]).Kind() == reflect.Slice {
-		res = e.model.AddPolicy("p", "p", params[0].([]string))
+		ruleAdded = e.addPolicy("p", "p", params[0].([]string))
 	} else {
 		policy := make([]string, 0)
 		for _, param := range params {
 			policy = append(policy, param.(string))
 		}
 
-		res = e.model.AddPolicy("p", "p", policy)
+		ruleAdded = e.addPolicy("p", "p", policy)
 	}
 
-	return res
+	return ruleAdded
 }
 
 // RemovePolicy removes an authorization rule from the current policy.
-func (e *Enforcer) RemovePolicy(params ...interface{}) {
+func (e *Enforcer) RemovePolicy(params ...interface{}) bool {
+	ruleRemoved := false
 	if len(params) == 1 && reflect.TypeOf(params[0]).Kind() == reflect.Slice {
-		e.model.RemovePolicy("p", "p", params[0].([]string))
+		ruleRemoved = e.removePolicy("p", "p", params[0].([]string))
 	} else {
 		policy := make([]string, 0)
 		for _, param := range params {
 			policy = append(policy, param.(string))
 		}
 
-		e.model.RemovePolicy("p", "p", policy)
+		ruleRemoved = e.removePolicy("p", "p", policy)
 	}
+
+	return ruleRemoved
 }
 
 // RemoveFilteredPolicy removes an authorization rule from the current policy, field filters can be specified.
-func (e *Enforcer) RemoveFilteredPolicy(fieldIndex int, fieldValues ...string) {
-	e.model.RemoveFilteredPolicy("p", "p", fieldIndex, fieldValues...)
+func (e *Enforcer) RemoveFilteredPolicy(fieldIndex int, fieldValues ...string) bool {
+	ruleRemoved := e.removeFilteredPolicy("p", "p", fieldIndex, fieldValues...)
+	return ruleRemoved
 }
 
 // HasGroupingPolicy determines whether a role inheritance rule exists.
 func (e *Enforcer) HasGroupingPolicy(params ...interface{}) bool {
 	if len(params) == 1 && reflect.TypeOf(params[0]).Kind() == reflect.Slice {
 		return e.model.HasPolicy("g", "g", params[0].([]string))
-	} else {
-		policy := make([]string, 0)
-		for _, param := range params {
-			policy = append(policy, param.(string))
-		}
-
-		return e.model.HasPolicy("g", "g", policy)
 	}
+
+	policy := make([]string, 0)
+	for _, param := range params {
+		policy = append(policy, param.(string))
+	}
+
+	return e.model.HasPolicy("g", "g", policy)
 }
 
 // AddGroupingPolicy adds a role inheritance rule to the current policy.
-// If you try to add an existing policy, the call fails and returns false.
+// If the rule already exists, the function returns false and the rule will not be added.
+// Otherwise the function returns true by adding the new rule.
 func (e *Enforcer) AddGroupingPolicy(params ...interface{}) bool {
-	res := false
+	ruleAdded := false
 	if len(params) == 1 && reflect.TypeOf(params[0]).Kind() == reflect.Slice {
-		res = e.model.AddPolicy("g", "g", params[0].([]string))
+		ruleAdded = e.addPolicy("g", "g", params[0].([]string))
 	} else {
 		policy := make([]string, 0)
 		for _, param := range params {
 			policy = append(policy, param.(string))
 		}
 
-		res = e.model.AddPolicy("g", "g", policy)
+		ruleAdded = e.addPolicy("g", "g", policy)
 	}
 
 	e.model.BuildRoleLinks()
-	return res
+	return ruleAdded
 }
 
 // RemoveGroupingPolicy removes a role inheritance rule from the current policy.
-func (e *Enforcer) RemoveGroupingPolicy(params ...interface{}) {
+func (e *Enforcer) RemoveGroupingPolicy(params ...interface{}) bool {
+	ruleRemoved := false
 	if len(params) == 1 && reflect.TypeOf(params[0]).Kind() == reflect.Slice {
-		e.model.RemovePolicy("g", "g", params[0].([]string))
+		ruleRemoved = e.removePolicy("g", "g", params[0].([]string))
 	} else {
 		policy := make([]string, 0)
 		for _, param := range params {
 			policy = append(policy, param.(string))
 		}
 
-		e.model.RemovePolicy("g", "g", policy)
+		ruleRemoved = e.removePolicy("g", "g", policy)
 	}
 
 	e.model.BuildRoleLinks()
+	return ruleRemoved
 }
 
 // RemoveFilteredGroupingPolicy removes a role inheritance rule from the current policy, field filters can be specified.
-func (e *Enforcer) RemoveFilteredGroupingPolicy(fieldIndex int, fieldValues ...string) {
-	e.model.RemoveFilteredPolicy("g", "g", fieldIndex, fieldValues...)
+func (e *Enforcer) RemoveFilteredGroupingPolicy(fieldIndex int, fieldValues ...string) bool {
+	ruleRemoved := e.removeFilteredPolicy("g", "g", fieldIndex, fieldValues...)
 	e.model.BuildRoleLinks()
+	return ruleRemoved
 }
 
 // AddFunction adds a customized function.
