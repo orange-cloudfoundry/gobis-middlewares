@@ -426,9 +426,9 @@ the list of group accessible by other middlewares by using [context groups](http
 
 Add oauth2 authentication underlying upstream
 
-See godoc for [LdapOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/oauth2#LdapOptions) to know more about parameters.
+See godoc for [Oauth2Options](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/oauth2#Oauth2Options) to know more about parameters.
 
-**Note**: If a JWT token is provided by your oauth2 provider you should always use [JWY](#jwt) middleware to verify it.
+**Note**: If a JWT token is provided by your oauth2 provider you should always use [JWT](#jwt) middleware to verify it.
 
 ### Use programmatically
 
