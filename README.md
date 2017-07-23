@@ -22,6 +22,7 @@ List:
 - [circuit breaker](#circuit-breaker)
 - [conn limit](#conn-limit)
 - [cors](#cors)
+- [oauth2](#oauth2)
 - [ldap](#ldap)
 - [rate limit](#rate-limit)
 - [trace](#trace)
@@ -32,7 +33,7 @@ Give the ability to connect an user over basic auth, retrieve a token from an oa
 
 This was made to transparently convert a basic auth authentication to an oauth2 one.
 
-See godoc for [Basic2TokenOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#Basic2TokenOptions) to know more about parameters.
+See godoc for [Basic2TokenOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/basic2token#Basic2TokenOptions) to know more about parameters.
 
 **Note**:
 - Your oauth2 server must have the `password` grant type such as [UAA](https://github.com/cloudfoundry/uaa) or [Gitlab in oauth2 provider](https://docs.gitlab.com/ce/api/oauth2.html#resource-owner-password-credentials)
@@ -40,6 +41,8 @@ See godoc for [Basic2TokenOptions](https://godoc.org/github.com/orange-cloudfoun
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/basic2token"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -60,7 +63,7 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewBasic2Token()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(basic2token.NewBasic2Token()))
 // create your server
 ```
 
@@ -69,7 +72,7 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   basic2token:
-    enable: true
+    enabled: true
     access_token_uri: https://my.uaa.local/oauth/token
     client_id: cf
     client_secret: ~
@@ -88,11 +91,13 @@ middleware_params:
 
 Add basic auth to upstream
 
-See godoc for [BasicAuthOption](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#BasicAuthOption) to know more about parameters.
+See godoc for [BasicAuthOption](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/basicauth#BasicAuthOption) to know more about parameters.
 
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/basicauth"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -116,7 +121,7 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewBasicAuth()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(basicauth.NewBasicAuth()))
 // create your server
 ```
 
@@ -159,7 +164,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: gobis.InterfaceToMap(casbin.CasbinConfig{
                         CircuitBreaker: &casbin.CasbinOption{
-                                Enable: true,
+                                Enabled: true,
                                 Policies: []casbin.CasbinPolicy{
                                         Type: "p",
                                         Sub: "usernameOrGroupName",
@@ -180,7 +185,7 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   casbin:
-    enable: true
+    enabled: true
     policies:
     - {type: p, sub: usernameOrGroupName, obj: /mysubpath/*, act: *}
 ```
@@ -195,11 +200,13 @@ this allow you, if you use ldap middleware, to pass a group name found as a `sub
 
 Hystrix-style circuit breaker
 
-See godoc for [CircuitBreakerOption](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#CircuitBreakerOption) to know more about parameters.
+See godoc for [CircuitBreakerOption](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/cbreaker#CircuitBreakerOption) to know more about parameters.
 
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/cbreaker"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -208,7 +215,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: gobis.InterfaceToMap(middlewares.CircuitBreakerConfig{
                         CircuitBreaker: &middlewares.CircuitBreakerOptions{
-                                Enable: true,
+                                Enabled: true,
                                 Expression: "NetworkErrorRatio() < 0.5",
                                 FallbackUrl: "http://my.fallback.com",
                         },
@@ -216,7 +223,7 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewCircuitBreaker()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(cbreaker.NewCircuitBreaker()))
 // create your server
 ```
 
@@ -225,7 +232,7 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   circuit_breaker:
-    enable: true
+    enabled: true
     expression: NetworkErrorRatio() < 0.5
     fallback_url: http://my.fallback.com
 ```
@@ -235,11 +242,13 @@ middleware_params:
 
 Limit number of simultaneous connection
 
-See godoc for [ConnLimitOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#ConnLimitOptions) to know more about parameters.
+See godoc for [ConnLimitOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/connlimit#ConnLimitOptions) to know more about parameters.
 
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/connlimit"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -248,13 +257,13 @@ configHandler := gobis.DefaultHandlerConfig{
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: gobis.InterfaceToMap(middlewares.ConnLimitConfig{
                         ConnLimit: &middlewares.ConnLimitOptions{
-                                Enable: true,
+                                Enabled: true,
                         },
                 }),
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewConnLimit()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(connlimit.NewConnLimit()))
 // create your server
 ```
 
@@ -263,18 +272,20 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   conn_limit:
-    enable: true
+    enabled: true
 ```
 
 ## Cors
 
 Add cors headers to response
 
-See godoc for [CorsOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#CorsOptions) to know more about parameters.
+See godoc for [CorsOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/cors#CorsOptions) to know more about parameters.
 
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/cors"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -289,7 +300,7 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewCors()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(cors.NewCors()))
 // create your server
 ```
 
@@ -307,11 +318,13 @@ middleware_params:
 
 Verify a JWT token with its secret/pubkey and can give scopes as groups through [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups) to use it in others middlewares
 
-See godoc for [JwtOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#JwtOptions) to know more about parameters.
+See godoc for [JwtOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/jwt#JwtOptions) to know more about parameters.
 
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/jwt"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -320,7 +333,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: gobis.InterfaceToMap(middlewares.JwtConfig{
                         Ldap: &middlewares.JwtOptions{
-                                Enable: true,
+                                Enabled: true,
                                 Alg: "RS256", // this is mandatory due to security issue: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries
                                 Secret: "hmac secret or ECDSA/RSA public key", 
                                 Issuer: "https://issuer.which.sign.token.com",
@@ -329,7 +342,7 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewJwt()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(jwt.NewJwt()))
 // create your server
 ```
 
@@ -338,7 +351,7 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   jwt:
-    enable: true
+    enabled: true
     alg: RS256
     secret: hmac secret or ECDSA/RSA public key
     issuer: https://issuer.which.sign.token.com
@@ -353,11 +366,13 @@ middleware_params:
 
 Add basic authentiation based on ldap to upstream
 
-See godoc for [LdapOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#LdapOptions) to know more about parameters.
+See godoc for [LdapOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/ldap#LdapOptions) to know more about parameters.
 
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/ldap"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -366,7 +381,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: gobis.InterfaceToMap(middlewares.LdapConfig{
                         Ldap: &middlewares.LdapOptions{
-                                Enable: true,
+                                Enabled: true,
                                 BindDn: "uid=readonly,dc=com",
                                 BindPassword: "password",
                                 Address: "ldap.example.com:636",
@@ -381,7 +396,7 @@ configHandler := gobis.DefaultHandlerConfig{
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewLdap()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(ldap.NewLdap()))
 // create your server
 ```
 
@@ -390,7 +405,7 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   ldap:
-    enable: true
+    enabled: true
     bind_dn: uid=readonly,dc=com
     bind_password: password
     address: ldap.example.com:636
@@ -407,15 +422,85 @@ middleware_params:
 If `GroupSearchBaseDns` and `GroupSearchFilter` params are set the middleware will pass in context 
 the list of group accessible by other middlewares by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
 
-## Rate limit
+## Oauth2
 
-Limit number of request in period of time
+Add oauth2 authentication underlying upstream
 
-See godoc for [RateLimitOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#RateLimitOptions) to know more about parameters.
+See godoc for [LdapOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/oauth2#LdapOptions) to know more about parameters.
+
+**Note**: If a JWT token is provided by your oauth2 provider you should always use [JWY](#jwt) middleware to verify it.
 
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/oauth2"
+
+configHandler := gobis.DefaultHandlerConfig{
+        Routes: []gobis.ProxyRoute{
+            {
+                Name: "myapi",
+                Path: "/app/**",
+                Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
+                MiddlewareParams: gobis.InterfaceToMap(middlewares.Oauth2Config{
+                        Ldap: &middlewares.Oauth2Options{
+                                Enabled: true,
+                                ClientId: "myclientid",
+                                ClientSecret: "myclientsecret",
+                                AuthorizationUri: "http://github.com/login/oauth/authorize",
+                                AccessTokenUri: "http://github.com/login/oauth/access_token",
+                                UserInfoUri: "https://api.github.com/user",
+                                UseRouteTransport: true,
+                                InsecureSkipVerify: false,
+                                LoginPath: "/login",
+                                LogoutPath: "/logout",
+                                AuthKey: "my-super-strong-auth-key",
+                                Scopes: []string{},
+                        },
+                }),
+            },
+        },
+}
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(oauth2.NewOauth2()))
+// create your server
+```
+
+### Use in config file
+
+```yaml
+middleware_params:
+  oauth2:
+    enabled: true
+    client_id: myclientid
+    client_secret: myclientsecret
+    authorization_uri: http://github.com/login/oauth/authorize
+    access_token_uri: https://github.com/login/oauth/access_token
+    user_info_uri: https://api.github.com/user
+    auth_key: my-super-strong-auth-key
+    login_path: /login
+    logout_path: /logout
+    use_route_transport: true
+    insecure_skip_verify: false
+    scopes: []
+```
+
+### Tips
+
+- If user info uri is set username will retrieve from it and be passed through [context username](https://godoc.org/github.com/orange-cloudfoundry/gobis#UserName) to use it in others middlewares
+- Scopes will be loaded as groups and others middlewares will
+ be able to find groups for the current user by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
+
+
+## Rate limit
+
+Limit number of request in period of time
+
+See godoc for [RateLimitOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/ratelimit#RateLimitOptions) to know more about parameters.
+
+### Use programmatically
+
+```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/ratelimit"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -424,13 +509,13 @@ configHandler := gobis.DefaultHandlerConfig{
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: gobis.InterfaceToMap(middlewares.RateLimitConfig{
                         RateLimit: &middlewares.RateLimitOptions{
-                                Enable: true,
+                                Enabled: true,
                         },
                 }),
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewRateLimit()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(ratelimit.NewRateLimit()))
 // create your server
 ```
 
@@ -439,18 +524,20 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   rate_limit:
-    enable: true
+    enabled: true
 ```
 
 ## Trace
 
 Structured request and response logger
 
-See godoc for [TraceOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares#TraceOptions) to know more about parameters.
+See godoc for [TraceOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/trace#TraceOptions) to know more about parameters.
 
 ### Use programmatically
 
 ```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/trace"
+
 configHandler := gobis.DefaultHandlerConfig{
         Routes: []gobis.ProxyRoute{
             {
@@ -459,13 +546,13 @@ configHandler := gobis.DefaultHandlerConfig{
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: gobis.InterfaceToMap(middlewares.TraceConfig{
                         Trace: &middlewares.TraceOptions{
-                                Enable: true,
+                                Enabled: true,
                         },
                 }),
             },
         },
 }
-gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(NewCors()))
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(trace.NewTrace()))
 // create your server
 ```
 
@@ -474,5 +561,5 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   trace:
-    enable: true
+    enabled: true
 ```

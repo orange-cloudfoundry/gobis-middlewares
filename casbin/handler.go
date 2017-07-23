@@ -60,7 +60,7 @@ func NewCasbin() *Casbin {
 }
 func (Casbin) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http.Handler) (http.Handler, error) {
 	config := params.(CasbinConfig)
-	if config.Casbin == nil || !config.Casbin.Enable {
+	if config.Casbin == nil || !config.Casbin.Enabled {
 		return handler, nil
 	}
 	return NewCasbinHandler(handler, config.Casbin), nil

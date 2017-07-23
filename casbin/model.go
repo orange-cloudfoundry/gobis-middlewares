@@ -11,7 +11,7 @@ type CasbinConfig struct {
 }
 type CasbinOption struct {
 	// Enable casbin access control
-	Enable   bool `mapstructure:"enable" json:"enable" yaml:"enable"`
+	Enabled  bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	// List of policies to load
 	// middleware will load as role policies all group found by using `ctx.Groups(*http.Request)`
 	// It will also load policies found in context `casbin.PolicyContextKey` (value should be passed in context should be *[]CasbinPolicy)
