@@ -1,17 +1,6 @@
 # Gobis-middlewares [![GoDoc](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares?status.svg)](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares)
 
 This is a set of middlewares created for [gobis](https://github.com/orange-cloudfoundry/gobis) useable on your on project containing gobis.
- 
-Use it by import in this way:
-
-```go
-import "github.com/orange-cloudfoundry/gobis-middlewares"
-
-func main(){
-    // the package name is middlewares
-    myMidlewareFunc := middlewares.Ldap
-}
-```
 
 **Note**: They are loaded by default on [gobis-server](https://github.com/orange-cloudfoundry/gobis-server)
 
