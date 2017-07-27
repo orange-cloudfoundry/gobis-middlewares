@@ -13,6 +13,7 @@ import (
 	"github.com/orange-cloudfoundry/gobis-middlewares/oauth2"
 	"github.com/orange-cloudfoundry/gobis-middlewares/ldap"
 	"github.com/orange-cloudfoundry/gobis-middlewares/cors"
+	"github.com/orange-cloudfoundry/gobis-middlewares/authpubtkt"
 )
 
 func DefaultHandlers() []gobis.MiddlewareHandler {
@@ -22,6 +23,7 @@ func DefaultHandlers() []gobis.MiddlewareHandler {
 		basicauth.NewBasicAuth(),
 		basic2token.NewBasic2Token(),
 		oauth2.NewOauth2(),
+		authpubtkt.NewAuthPubTkt(),
 		jwt.NewJwt(),
 		casbin.NewCasbin(),
 		cbreaker.NewCircuitBreaker(),

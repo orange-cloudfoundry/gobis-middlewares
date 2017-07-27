@@ -117,6 +117,19 @@
 			"revisionTime": "2017-06-19T18:57:59Z"
 		},
 		{
+			"checksumSHA1": "EHjhpHipgm+XGccrRAms9AW3Ewk=",
+			"origin": "github.com/orange-cloudfoundry/go-auth-pubtkt/vendor/github.com/mitchellh/mapstructure",
+			"path": "github.com/mitchellh/mapstructure",
+			"revision": "da2292f7bea8d03e3baf6f271e51aa5923c83d62",
+			"revisionTime": "2017-07-26T18:17:15Z"
+		},
+		{
+			"checksumSHA1": "n9cOf3lysH/4jCSCJfC7R1r09f4=",
+			"path": "github.com/orange-cloudfoundry/go-auth-pubtkt",
+			"revision": "da2292f7bea8d03e3baf6f271e51aa5923c83d62",
+			"revisionTime": "2017-07-26T18:17:15Z"
+		},
+		{
 			"checksumSHA1": "lZmPAbekxLbMFQirB/vzbdI+5O8=",
 			"path": "github.com/rs/cors",
 			"revision": "8dd4211afb5d08dbb39a533b9bb9e4b486351df6",
