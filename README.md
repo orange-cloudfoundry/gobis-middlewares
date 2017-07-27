@@ -11,6 +11,7 @@ List:
 - [circuit breaker](#circuit-breaker)
 - [conn limit](#conn-limit)
 - [cors](#cors)
+- [JWT](#jwt)
 - [oauth2](#oauth2)
 - [ldap](#ldap)
 - [rate limit](#rate-limit)
