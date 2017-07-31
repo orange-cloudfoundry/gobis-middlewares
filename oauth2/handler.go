@@ -20,22 +20,22 @@ const stateSessKey = "state"
 const refererSessKey = "referer"
 
 type Oauth2Handler struct {
-	options      *Oauth2Options
-	store        *sessions.CookieStore
-	oauth2Conf   *oauth2.Config
-	next         http.Handler
-	client       *http.Client
-	callbackPath string
+	options            *Oauth2Options
+	store              *sessions.CookieStore
+	oauth2Conf         *oauth2.Config
+	next               http.Handler
+	client             *http.Client
+	callbackCreateFunc func(*http.Request) *url.URL
 }
 
-func NewOauth2Handler(options *Oauth2Options, next http.Handler, client *http.Client, callbackPath string) *Oauth2Handler {
+func NewOauth2Handler(options *Oauth2Options, next http.Handler, client *http.Client, callbackCreateFunc func(*http.Request) *url.URL) *Oauth2Handler {
 	return &Oauth2Handler{
 		options: options,
 		store: createSessStore(options.AuthKey, options.EncKey),
 		oauth2Conf: createOauth2Conf(options),
 		next: next,
 		client: client,
-		callbackPath: callbackPath,
+		callbackCreateFunc: callbackCreateFunc,
 	}
 }
 
@@ -59,9 +59,7 @@ func (h Oauth2Handler) getSession(req *http.Request) (*sessions.Session, error) 
 func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	gobis.DirtHeader(req, "Authorization")
 	if h.options.UseRedirectUrl {
-		redirectUrl, _ := url.Parse(req.URL.String())
-		redirectUrl.Path = h.callbackPath
-		h.oauth2Conf.RedirectURL = redirectUrl.String()
+		h.oauth2Conf.RedirectURL = h.callbackCreateFunc(req).String()
 	}
 	if gobis.Path(req) == h.options.LoginPath {
 		h.LoginHandler(w, req)

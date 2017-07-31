@@ -4,6 +4,7 @@ import (
 	"github.com/orange-cloudfoundry/gobis"
 	"net/http"
 	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
+	"net/url"
 )
 
 type Oauth2Config struct {
@@ -83,7 +84,12 @@ func (Oauth2) Handler(proxyRoute gobis.ProxyRoute, params interface{}, next http
 		options,
 		next,
 		utils.CreateClient(options.ClientRouteOption, proxyRoute),
-		proxyRoute.CreateRoutePath(options.LoginPath),
+		func(req *http.Request) *url.URL {
+			path := proxyRoute.CreateRoutePath(options.LoginPath)
+			upstreamUrl := proxyRoute.UpstreamUrl(req)
+			upstreamUrl.Path = path
+			return upstreamUrl
+		},
 	)
 	return oauth2Handler, nil
 }
