@@ -142,6 +142,12 @@
 			"revisionTime": "2017-07-13T11:57:24Z"
 		},
 		{
+			"checksumSHA1": "iAjdDO+1q6NDsZI2IxpP/KNSRNY=",
+			"path": "github.com/unrolled/secure",
+			"revision": "a80c09da9c7bd84aaf622507fd339a9281b8acd1",
+			"revisionTime": "2017-07-11T17:01:39Z"
+		},
+		{
 			"checksumSHA1": "RJ1fxFjNb7bpXgM8KatX7/mQQ6A=",
 			"path": "github.com/vulcand/oxy/cbreaker",
 			"revision": "ddc324225ef568955a8a177086a00f5bfa95896e",
