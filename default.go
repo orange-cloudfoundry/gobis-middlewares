@@ -14,11 +14,13 @@ import (
 	"github.com/orange-cloudfoundry/gobis-middlewares/ldap"
 	"github.com/orange-cloudfoundry/gobis-middlewares/cors"
 	"github.com/orange-cloudfoundry/gobis-middlewares/authpubtkt"
+	"github.com/orange-cloudfoundry/gobis-middlewares/secure"
 )
 
 func DefaultHandlers() []gobis.MiddlewareHandler {
 	return []gobis.MiddlewareHandler{
 		cors.NewCors(),
+		secure.NewSecure(),
 		ldap.NewLdap(),
 		basicauth.NewBasicAuth(),
 		basic2token.NewBasic2Token(),
