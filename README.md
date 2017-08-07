@@ -14,6 +14,7 @@ List:
 - [JWT](#jwt)
 - [oauth2](#oauth2)
 - [ldap](#ldap)
+- [secure](#secure): An HTTP middleware for Go that facilitates some quick security wins
 - [rate limit](#rate-limit)
 - [trace](#trace)
 
@@ -39,8 +40,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.Basic2TokenConfig{
-                        Ldap: &middlewares.Basic2TokenOptions{
+                MiddlewareParams: gobis.InterfaceToMap(basic2token.Basic2TokenConfig{
+                        Ldap: &basic2token.Basic2TokenOptions{
                                 Enable: true,
                                 AccessTokenUri: "https://my.uaa.local/oauth/token",
                                 ClientId: "cf",
@@ -77,6 +78,10 @@ middleware_params:
  be able to find groups for the current user by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
 - Logged user is accessible by other middleware through [context username](https://godoc.org/github.com/orange-cloudfoundry/gobis#Username)
 
+### Credits
+
+- https://github.com/goji/httpauth
+
 ## Basic auth
 
 Add basic auth to upstream
@@ -94,8 +99,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.BasicAuthConfig{
-                        BasicAuth: &middlewares.BasicAuthOptions{
+                MiddlewareParams: gobis.InterfaceToMap(basicauth.BasicAuthConfig{
+                        BasicAuth: &basicauth.BasicAuthOptions{
                                 {
                                         User: "user",
                                         Password: "$2y$12$AHKssZrkmcG2pmom.rvy2OMsV8HpMHHcRIEY158LgZIkrA0BFvFQq", // equal password
@@ -132,6 +137,11 @@ middleware_params:
 
 - By setting groups it will allow others middleware to find groups for the current user by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
 - If you use bcrypt more the cost will be higher more it will take time to test a password against it and will increase response time
+
+### Credits
+
+- https://github.com/goji/httpauth
+
 
 ## Casbin
 
@@ -186,6 +196,11 @@ middleware_params:
 this allow you, if you use ldap middleware, to pass a group name found as a `sub` (e.g.: `sub: myUserGroupName`)
 - It will also load all policies found in context key `casbin.PolicyContextKey` this allow other middleware to add their own policies
 
+### Credits
+
+- https://github.com/casbin/casbin
+
+
 ## Circuit breaker
 
 Hystrix-style circuit breaker
@@ -203,8 +218,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.CircuitBreakerConfig{
-                        CircuitBreaker: &middlewares.CircuitBreakerOptions{
+                MiddlewareParams: gobis.InterfaceToMap(cbreaker.CircuitBreakerConfig{
+                        CircuitBreaker: &cbreaker.CircuitBreakerOptions{
                                 Enabled: true,
                                 Expression: "NetworkErrorRatio() < 0.5",
                                 FallbackUrl: "http://my.fallback.com",
@@ -227,6 +242,9 @@ middleware_params:
     fallback_url: http://my.fallback.com
 ```
 
+### Credits
+
+- https://github.com/vulcand/oxy
 
 ## Conn limit
 
@@ -245,8 +263,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.ConnLimitConfig{
-                        ConnLimit: &middlewares.ConnLimitOptions{
+                MiddlewareParams: gobis.InterfaceToMap(connlimit.ConnLimitConfig{
+                        ConnLimit: &connlimit.ConnLimitOptions{
                                 Enabled: true,
                         },
                 }),
@@ -265,6 +283,10 @@ middleware_params:
     enabled: true
 ```
 
+### Credits
+
+- https://github.com/vulcand/oxy
+
 ## Cors
 
 Add cors headers to response
@@ -282,8 +304,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.CorsConfig{
-                        Cors: &middlewares.CorsOptions{
+                MiddlewareParams: gobis.InterfaceToMap(cors.CorsConfig{
+                        Cors: &cors.CorsOptions{
                                 AllowedOrigins: []string{"http://localhost"},
                         },
                 }),
@@ -304,6 +326,10 @@ middleware_params:
     - http://localhost
 ```
 
+### Credits
+
+- https://github.com/rs/cors
+
 ## Jwt
 
 Verify a JWT token with its secret/pubkey and can give scopes as groups through [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups) to use it in others middlewares
@@ -321,8 +347,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.JwtConfig{
-                        Ldap: &middlewares.JwtOptions{
+                MiddlewareParams: gobis.InterfaceToMap(jwt.JwtConfig{
+                        Ldap: &jwt.JwtOptions{
                                 Enabled: true,
                                 Alg: "RS256", // this is mandatory due to security issue: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries
                                 Secret: "hmac secret or ECDSA/RSA public key", 
@@ -335,6 +361,11 @@ configHandler := gobis.DefaultHandlerConfig{
 gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(jwt.NewJwt()))
 // create your server
 ```
+
+### Credits
+
+- https://github.com/auth0/go-jwt-middleware
+- https://github.com/dgrijalva/jwt-go
 
 ### Use in config file
 
@@ -369,8 +400,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.LdapConfig{
-                        Ldap: &middlewares.LdapOptions{
+                MiddlewareParams: gobis.InterfaceToMap(ldap.LdapConfig{
+                        Ldap: &ldap.LdapOptions{
                                 Enabled: true,
                                 BindDn: "uid=readonly,dc=com",
                                 BindPassword: "password",
@@ -412,6 +443,11 @@ middleware_params:
 If `GroupSearchBaseDns` and `GroupSearchFilter` params are set the middleware will pass in context 
 the list of group accessible by other middlewares by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
 
+### Credits
+
+- https://github.com/goji/httpauth
+- https://github.com/go-ldap/ldap
+
 ## Oauth2
 
 Add oauth2 authentication underlying upstream
@@ -431,8 +467,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.Oauth2Config{
-                        Ldap: &middlewares.Oauth2Options{
+                MiddlewareParams: gobis.InterfaceToMap(oauth2.Oauth2Config{
+                        Ldap: &oauth2.Oauth2Options{
                                 Enabled: true,
                                 ClientId: "myclientid",
                                 ClientSecret: "myclientsecret",
@@ -479,6 +515,9 @@ middleware_params:
 - Scopes will be loaded as groups and others middlewares will
  be able to find groups for the current user by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
 
+### Credits
+
+- https://github.com/golang/oauth2
 
 ## Rate limit
 
@@ -497,8 +536,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.RateLimitConfig{
-                        RateLimit: &middlewares.RateLimitOptions{
+                MiddlewareParams: gobis.InterfaceToMap(ratelimit.RateLimitConfig{
+                        RateLimit: &ratelimit.RateLimitOptions{
                                 Enabled: true,
                         },
                 }),
@@ -517,6 +556,53 @@ middleware_params:
     enabled: true
 ```
 
+### Credits
+
+- https://github.com/vulcand/oxy
+
+## Secure
+
+[Secure](https://github.com/unrolled/secure) is an HTTP middleware for Go that facilitates some quick security wins.
+
+See godoc for [SecureOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/secure#SecureOptions) to know more about parameters.
+
+### Use programmatically
+
+```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/secure"
+
+configHandler := gobis.DefaultHandlerConfig{
+        Routes: []gobis.ProxyRoute{
+            {
+                Name: "myapi",
+                Path: "/app/**",
+                Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
+                MiddlewareParams: gobis.InterfaceToMap(secure.SecureConfig{
+                        RateLimit: &secure.SecureOptions{
+                                Enabled: true,
+                                AllowedHosts: []string{"ssl.example.com"},
+                        },
+                }),
+            },
+        },
+}
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(secure.NewSecure()))
+// create your server
+```
+
+### Use in config file
+
+```yaml
+middleware_params:
+  secure:
+    enabled: true
+    allowed_hosts: ["ssl.example.com"]
+```
+
+### Credits
+
+- https://github.com/unrolled/secure
+
 ## Trace
 
 Structured request and response logger
@@ -534,8 +620,8 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(middlewares.TraceConfig{
-                        Trace: &middlewares.TraceOptions{
+                MiddlewareParams: gobis.InterfaceToMap(trace.TraceConfig{
+                        Trace: &trace.TraceOptions{
                                 Enabled: true,
                         },
                 }),
@@ -553,3 +639,7 @@ middleware_params:
   trace:
     enabled: true
 ```
+
+### Credits
+
+- https://github.com/vulcand/oxy
