@@ -54,7 +54,7 @@ type SecureOptions struct {
 }
 
 func (o SecureOptions) ToSecureOptions() secure.Options {
-	return SecureOptions{
+	return secure.Options{
 		AllowedHosts: o.AllowedHosts,
 		HostsProxyHeaders: o.HostsProxyHeaders,
 		SSLRedirect: o.SSLRedirect,
