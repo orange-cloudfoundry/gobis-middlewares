@@ -88,6 +88,7 @@ func (Oauth2) Handler(proxyRoute gobis.ProxyRoute, params interface{}, next http
 			path := proxyRoute.CreateRoutePath(options.LoginPath)
 			upstreamUrl := proxyRoute.UpstreamUrl(req)
 			upstreamUrl.Path = path
+			upstreamUrl.RawQuery = ""
 			return upstreamUrl
 		},
 	)

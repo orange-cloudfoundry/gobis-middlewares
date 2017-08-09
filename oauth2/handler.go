@@ -122,6 +122,9 @@ func (h Oauth2Handler) LogoutHandler(w http.ResponseWriter, req *http.Request) {
 	return
 }
 func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
+	if h.options.UseRedirectUrl {
+		h.oauth2Conf.RedirectURL = h.callbackCreateFunc(req).String()
+	}
 	sess, err := h.getSession(req)
 	if err != nil {
 		panic(err)
