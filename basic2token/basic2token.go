@@ -1,17 +1,17 @@
 package basic2token
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"github.com/goji/httpauth"
+	"github.com/orange-cloudfoundry/gobis"
+	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
-	"io"
-	"encoding/json"
-	"bytes"
 	"strings"
-	"io/ioutil"
-	"fmt"
-	"github.com/orange-cloudfoundry/gobis"
-	"github.com/goji/httpauth"
-	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
 )
 
 type Basic2TokenConfig struct {
@@ -22,24 +22,24 @@ type Basic2TokenOptions struct {
 	// Uri to retrieve access token e.g.: https://my.uaa.local/oauth/token
 	AccessTokenUri string `mapstructure:"access_token_uri" json:"access_token_uri" yaml:"access_token_uri"`
 	// Client id which will connect user on behalf him
-	ClientId       string `mapstructure:"client_id" json:"client_id" yaml:"client_id"`
+	ClientId string `mapstructure:"client_id" json:"client_id" yaml:"client_id"`
 	// Client secret which will connect user on behalf him
-	ClientSecret   string `mapstructure:"client_secret" json:"client_secret" yaml:"client_secret"`
+	ClientSecret string `mapstructure:"client_secret" json:"client_secret" yaml:"client_secret"`
 	// Some oauth server can be configured to use a different of token
 	// if you want an opaque token from uaa you will set this value to "opaque"
-	TokenFormat    string `mapstructure:"token_format" json:"token_format" yaml:"token_format"`
+	TokenFormat string `mapstructure:"token_format" json:"token_format" yaml:"token_format"`
 	// Permit to basic2token to detect if a oauth token has been already set
 	// If token was already given it will forward to the next handler without trying to acquire a new token
 	// Default: bearer
-	TokenType      string `mapstructure:"token_type" json:"token_type" yaml:"token_type"`
+	TokenType string `mapstructure:"token_type" json:"token_type" yaml:"token_type"`
 	// By default request token is sent by post form, set to true to send as json
-	ParamsAsJson   bool `mapstructure:"params_as_json" json:"params_as_json" yaml:"params_as_json"`
+	ParamsAsJson bool `mapstructure:"params_as_json" json:"params_as_json" yaml:"params_as_json"`
 }
 type AccessTokenResponse struct {
 	AccessToken  string `json:"access_token"`
 	TokenType    string `json:"token_type"`
 	RefreshToken string `json:"refresh_token"`
-	ExpiresIn    int `json:"expires_in"`
+	ExpiresIn    int    `json:"expires_in"`
 	Scope        string `json:"scope"`
 	Jti          string `json:"jti"`
 }
@@ -50,7 +50,7 @@ type Basic2TokenAuth struct {
 
 func NewBasic2TokenAuth(client *http.Client, options Basic2TokenOptions) *Basic2TokenAuth {
 	return &Basic2TokenAuth{
-		client: client,
+		client:  client,
 		options: options,
 	}
 }

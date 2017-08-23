@@ -1,18 +1,18 @@
 package oauth2
 
 import (
-	"github.com/gorilla/sessions"
-	"net/http"
-	"github.com/orange-cloudfoundry/gobis"
-	"strings"
-	"golang.org/x/oauth2"
 	"context"
-	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
-	"io/ioutil"
-	"fmt"
 	"encoding/json"
-	"regexp"
+	"fmt"
+	"github.com/gorilla/sessions"
+	"github.com/orange-cloudfoundry/gobis"
+	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
+	"golang.org/x/oauth2"
+	"io/ioutil"
+	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 )
 
 const tokenSessKey = "token"
@@ -30,11 +30,11 @@ type Oauth2Handler struct {
 
 func NewOauth2Handler(options *Oauth2Options, next http.Handler, client *http.Client, callbackCreateFunc func(*http.Request) *url.URL) *Oauth2Handler {
 	return &Oauth2Handler{
-		options: options,
-		store: createSessStore(options.AuthKey, options.EncKey),
-		oauth2Conf: createOauth2Conf(options),
-		next: next,
-		client: client,
+		options:            options,
+		store:              createSessStore(options.AuthKey, options.EncKey),
+		oauth2Conf:         createOauth2Conf(options),
+		next:               next,
+		client:             client,
 		callbackCreateFunc: callbackCreateFunc,
 	}
 }
@@ -54,7 +54,7 @@ func (h Oauth2Handler) reqToken(req *http.Request) string {
 	return strings.Split(authHeader, " ")[1]
 }
 func (h Oauth2Handler) getSession(req *http.Request) (*sessions.Session, error) {
-	return h.store.Get(req, "session-" + gobis.RouteName(req))
+	return h.store.Get(req, "session-"+gobis.RouteName(req))
 }
 func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	gobis.DirtHeader(req, "Authorization")
@@ -73,17 +73,12 @@ func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	if h.reqHasToken(req) {
-		sess.Values[tokenSessKey] = h.reqToken(req)
-		sess.Save(req, w)
-		h.next.ServeHTTP(w, req)
+
+	if h.reqHasToken(req) || h.sessionHasToken(sess) {
+		h.serveNext(w, req, sess)
 		return
 	}
-	if h.sessionHasToken(sess) {
-		req.Header.Set("Authorization", sess.Values[tokenSessKey].(string))
-		h.next.ServeHTTP(w, req)
-		return
-	}
+
 	stateCode := utils.RandString(5)
 
 	sess.Values[stateSessKey] = stateCode
@@ -99,6 +94,36 @@ func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	authUrl := h.oauth2Conf.AuthCodeURL(stateCode, authCodeOpt...)
 	http.Redirect(w, req, authUrl, 302)
 	return
+}
+func (h Oauth2Handler) serveNext(w http.ResponseWriter, req *http.Request, sess *sessions.Session) {
+	if h.reqHasToken(req) {
+		sess.Values[tokenSessKey] = h.reqToken(req)
+		sess.Save(req, w)
+	}
+	if h.sessionHasToken(sess) {
+		req.Header.Set("Authorization", sess.Values[tokenSessKey].(string))
+	}
+	if sess.Values["username"] != nil {
+		gobis.SetUsername(req, sess.Values["username"].(string))
+		h.next.ServeHTTP(w, req)
+		return
+	}
+	token := sess.Values[tokenSessKey].(string)
+	tokenSplit := strings.Split(token, " ")
+	tokenType := ""
+	if len(tokenSplit) > 1 {
+		tokenType = tokenSplit[0]
+		token = strings.Join(tokenSplit[1:], " ")
+	}
+	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, h.client)
+	req.Header.Set("Authorization", sess.Values[tokenSessKey].(string))
+	h.retrieveUserInfo(req, ctx, &oauth2.Token{
+		TokenType:   tokenType,
+		AccessToken: token,
+	})
+	sess.Values["username"] = gobis.Username(req)
+	sess.Save(req, w)
+	h.next.ServeHTTP(w, req)
 }
 func (h Oauth2Handler) LogoutHandler(w http.ResponseWriter, req *http.Request) {
 	sess, err := h.getSession(req)
@@ -131,16 +156,16 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	code := req.URL.Query().Get("code")
 	if code == "" {
-		http.Error(w, http.StatusText(401) + ": no code provided", 401)
+		http.Error(w, http.StatusText(401)+": no code provided", 401)
 		return
 	}
 	state := req.URL.Query().Get("state")
 	if state != sess.Values[stateSessKey].(string) {
-		http.Error(w, http.StatusText(401) + ": bad state", 401)
+		http.Error(w, http.StatusText(401)+": bad state", 401)
 		return
 	}
 	if len(sess.Values) == 0 {
-		http.Error(w, http.StatusText(401) + ": no session exists", 401)
+		http.Error(w, http.StatusText(401)+": no session exists", 401)
 		return
 	}
 	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, h.client)
@@ -156,6 +181,7 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 
 	gobis.AddGroups(req, h.options.Scopes...)
 	h.retrieveUserInfo(req, ctx, token)
+	sess.Values["username"] = gobis.Username(req)
 	redirectUrl := h.options.RedirectLogUrl
 	if redirectUrl == "" && sess.Values[refererSessKey] != nil {
 		redirectUrl = sess.Values[refererSessKey].(string)

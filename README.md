@@ -11,6 +11,7 @@ List:
 - [circuit breaker](#circuit-breaker)
 - [conn limit](#conn-limit)
 - [cors](#cors)
+- [infopage](#infopage): Add an endpoint on upstream to see information like headers set by gobis and user informations set by middlewares (Useful for frontend)
 - [JWT](#jwt)
 - [oauth2](#oauth2)
 - [ldap](#ldap)
@@ -329,6 +330,60 @@ middleware_params:
 ### Credits
 
 - https://github.com/rs/cors
+
+## Infopage
+
+Add an endpoint on upstream to see information like headers set by gobis and user informations set by middlewares (Useful for frontend)
+
+See godoc for [CorsOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/infopage#InfoPageOptions) to know more about parameters.
+
+### Use programmatically
+
+```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/infopage"
+
+configHandler := gobis.DefaultHandlerConfig{
+        Routes: []gobis.ProxyRoute{
+            {
+                Name: "myapi",
+                Path: "/app/**",
+                Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
+                MiddlewareParams: gobis.InterfaceToMap(cors.InfoPageOptions{
+                        Cors: &cors.CorsOptions{
+                                Enabled: true,
+                                Path: "/user_info",
+                                ShowAuthorizationHeader: true,
+                                AuthorizationKeyName: "token",
+                        },
+                }),
+            },
+        },
+}
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(infopage.NewInfoPage()))
+// create your server
+```
+
+### Use in config file
+
+```yaml
+middleware_params:
+  info_page:
+    enabled: true
+    path: /user_info
+    show_authorization_header: true
+    authorization_key_name: token
+```
+
+Example of json when going to the endpoint `/user_info` when using infopage with oauth2 middleware:
+
+```json
+{
+	"forward": "true",
+	"token": "bearer atokencontent",
+	"username": "ausername",
+	"groups": ["group1", "group2"]
+}
+```
 
 ## Jwt
 
