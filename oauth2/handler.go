@@ -160,7 +160,7 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	state := req.URL.Query().Get("state")
-	if state != sess.Values[stateSessKey].(string) {
+	if sess.Values[stateSessKey] == nil || state != sess.Values[stateSessKey].(string) {
 		http.Error(w, http.StatusText(401)+": bad state", 401)
 		return
 	}

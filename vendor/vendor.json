@@ -1,6 +1,6 @@
 {
 	"comment": "",
-	"ignore": "test github.com/orange-cloudfoundry/gobis",
+	"ignore": "test github.com/orange-cloudfoundry/gobis github.com/sirupsen/logrus",
 	"package": [
 		{
 			"checksumSHA1": "RdLpGsVVVdIonqHIdQWDUtflkoo=",
@@ -134,12 +134,6 @@
 			"path": "github.com/rs/cors",
 			"revision": "8dd4211afb5d08dbb39a533b9bb9e4b486351df6",
 			"revisionTime": "2017-06-08T16:51:55Z"
-		},
-		{
-			"checksumSHA1": "7MMxe2xCV/0fpJhUuTfTeOKxCxs=",
-			"path": "github.com/sirupsen/logrus",
-			"revision": "51dc0fc64317a2861273909081f9c315786533eb",
-			"revisionTime": "2017-07-13T11:57:24Z"
 		},
 		{
 			"checksumSHA1": "iAjdDO+1q6NDsZI2IxpP/KNSRNY=",
