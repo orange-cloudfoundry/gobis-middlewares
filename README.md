@@ -21,7 +21,7 @@ List:
 
 **Pro tip**:
 
-You can set multiple middleware params programtically by using a dummy structure containing each config you wanna set, example:
+You can set multiple middleware params programmatically by using a dummy structure containing each config you wanna set, example:
 ```go
 package main
 import (
