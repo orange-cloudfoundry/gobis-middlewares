@@ -19,17 +19,6 @@ List:
 - [rate limit](#rate-limit)
 - [trace](#trace)
 
-## Basic2Token
-
-Give the ability to connect an user over basic auth, retrieve a token from an oauth2 server with user information and forward the request with this token.
-
-This was made to transparently convert a basic auth authentication to an oauth2 one.
-
-See godoc for [Basic2TokenOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/basic2token#Basic2TokenOptions) to know more about parameters.
-
-**Note**:
-- Your oauth2 server must have the `password` grant type such as [UAA](https://github.com/cloudfoundry/uaa) or [Gitlab in oauth2 provider](https://docs.gitlab.com/ce/api/oauth2.html#resource-owner-password-credentials)
-
 **Pro tip**:
 
 You can set multiple middleware params programtically by using a dummy structure containing each config you wanna set, example:
@@ -68,6 +57,17 @@ func main(){
     gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(trace.NewTrace(), cors.NewCors()))
 }
 ```
+
+## Basic2Token
+
+Give the ability to connect an user over basic auth, retrieve a token from an oauth2 server with user information and forward the request with this token.
+
+This was made to transparently convert a basic auth authentication to an oauth2 one.
+
+See godoc for [Basic2TokenOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/basic2token#Basic2TokenOptions) to know more about parameters.
+
+**Note**:
+- Your oauth2 server must have the `password` grant type such as [UAA](https://github.com/cloudfoundry/uaa) or [Gitlab in oauth2 provider](https://docs.gitlab.com/ce/api/oauth2.html#resource-owner-password-credentials)
 
 ### Use programmatically
 
