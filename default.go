@@ -18,6 +18,9 @@ import (
 	"github.com/orange-cloudfoundry/gobis-middlewares/trace"
 )
 
+// Provide all middleware as a single function
+// Order do matter !
+// Middleware call are made in order and middleware for security should be called first.
 func DefaultHandlers() []gobis.MiddlewareHandler {
 	return []gobis.MiddlewareHandler{
 		cors.NewCors(),

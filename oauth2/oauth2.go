@@ -41,7 +41,7 @@ type Oauth2Options struct {
 	// authorization key used by the session, it should be a strong key
 	// this field is mandatory
 	AuthKey string `mapstructure:"auth_key" json:"auth_key" yaml:"auth_key"`
-	// You can set an encryption key, the key must have one of this size: 16, 32 or 64
+	// You can set an encryption key for the session, the key must have one of this size: 16, 32 or 64
 	EncKey string `mapstructure:"enc_key" json:"enc_key" yaml:"enc_key"`
 	// AccessTypeOnline and AccessTypeOffline are options passed
 	// to the Options.AuthCodeURL method. They modify the

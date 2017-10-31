@@ -1,14 +1,14 @@
 package basicauth
 
 import (
-	"github.com/orange-cloudfoundry/gobis"
-	"github.com/goji/httpauth"
-	"net/http"
 	"crypto/sha256"
 	"crypto/subtle"
+	"fmt"
+	"github.com/goji/httpauth"
+	"github.com/orange-cloudfoundry/gobis"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/crypto/blowfish"
-	"fmt"
+	"net/http"
 )
 
 type BasicAuthOptions []BasicAuthOption
@@ -16,10 +16,10 @@ type BasicAuthConfig struct {
 	BasicAuth BasicAuthOptions `mapstructure:"basic_auth" json:"basic_auth" yaml:"basic_auth"`
 }
 type BasicAuthOption struct {
-	User     string `mapstructure:"user" json:"user" yaml:"user"`
-	Password string `mapstructure:"password" json:"password" yaml:"password"`
+	User     string   `mapstructure:"user" json:"user" yaml:"user"`
+	Password string   `mapstructure:"password" json:"password" yaml:"password"`
 	Groups   []string `mapstructure:"groups" json:"groups" yaml:"groups"`
-	Crypted  bool `mapstructure:"crypted" json:"crypted" yaml:"crypted"`
+	Crypted  bool     `mapstructure:"crypted" json:"crypted" yaml:"crypted"`
 }
 
 func (b BasicAuthOptions) Auth(user string, password string, req *http.Request) bool {
