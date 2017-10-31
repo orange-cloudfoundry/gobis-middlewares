@@ -30,6 +30,45 @@ See godoc for [Basic2TokenOptions](https://godoc.org/github.com/orange-cloudfoun
 **Note**:
 - Your oauth2 server must have the `password` grant type such as [UAA](https://github.com/cloudfoundry/uaa) or [Gitlab in oauth2 provider](https://docs.gitlab.com/ce/api/oauth2.html#resource-owner-password-credentials)
 
+**Pro tip**:
+
+You can set multiple middleware params programtically by using a dummy structure containing each config you wanna set, example:
+```go
+package main
+import (
+    "github.com/orange-cloudfoundry/gobis-middlewares/trace"
+    "github.com/orange-cloudfoundry/gobis-middlewares/cors"
+    "github.com/orange-cloudfoundry/gobis"
+)
+func main(){
+    configHandler := gobis.DefaultHandlerConfig{
+            Routes: []gobis.ProxyRoute{
+                {
+                    Name: "myapi",
+                    Path: "/app/**",
+                    Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
+                    MiddlewareParams: struct {
+                        trace.TraceConfig
+                        cors.CorsConfig
+                    }{
+                        TraceConfig: trace.TraceConfig{
+                            Trace: &trace.TraceOptions{
+                                Enabled: true,
+                            },
+                        },
+                        CorsConfig: cors.CorsConfig{
+                            Cors: &cors.CorsOptions{
+                                Enabled: true,
+                            },
+                        },
+                    },
+                },
+            },
+    }
+    gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(trace.NewTrace(), cors.NewCors()))
+}
+```
+
 ### Use programmatically
 
 ```go
@@ -41,7 +80,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(basic2token.Basic2TokenConfig{
+                MiddlewareParams: basic2token.Basic2TokenConfig{
                         Ldap: &basic2token.Basic2TokenOptions{
                                 Enable: true,
                                 AccessTokenUri: "https://my.uaa.local/oauth/token",
@@ -51,7 +90,7 @@ configHandler := gobis.DefaultHandlerConfig{
                                 UseRouteTransport: true,
                                 InsecureSkipVerify: true,
                         },
-                }),
+                },
             },
         },
 }
@@ -100,7 +139,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(basicauth.BasicAuthConfig{
+                MiddlewareParams: basicauth.BasicAuthConfig{
                         BasicAuth: &basicauth.BasicAuthOptions{
                                 {
                                         User: "user",
@@ -113,7 +152,7 @@ configHandler := gobis.DefaultHandlerConfig{
                                         Groups: []string{"admin"}
                                 },
                         },
-                }),
+                },
             },
         },
 }
@@ -163,7 +202,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(casbin.CasbinConfig{
+                MiddlewareParams: casbin.CasbinConfig{
                         CircuitBreaker: &casbin.CasbinOption{
                                 Enabled: true,
                                 Policies: []casbin.CasbinPolicy{
@@ -173,7 +212,7 @@ configHandler := gobis.DefaultHandlerConfig{
                                         Act: "*",
                                 },
                         },
-                }),
+                },
             },
         },
 }
@@ -219,13 +258,13 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(cbreaker.CircuitBreakerConfig{
+                MiddlewareParams: cbreaker.CircuitBreakerConfig{
                         CircuitBreaker: &cbreaker.CircuitBreakerOptions{
                                 Enabled: true,
                                 Expression: "NetworkErrorRatio() < 0.5",
                                 FallbackUrl: "http://my.fallback.com",
                         },
-                }),
+                },
             },
         },
 }
@@ -264,11 +303,11 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(connlimit.ConnLimitConfig{
+                MiddlewareParams: connlimit.ConnLimitConfig{
                         ConnLimit: &connlimit.ConnLimitOptions{
                                 Enabled: true,
                         },
-                }),
+                },
             },
         },
 }
@@ -305,11 +344,12 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(cors.CorsConfig{
+                MiddlewareParams: cors.CorsConfig{
                         Cors: &cors.CorsOptions{
+                                Enabled: true,
                                 AllowedOrigins: []string{"http://localhost"},
                         },
-                }),
+                },
             },
         },
 }
@@ -322,6 +362,7 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ```yaml
 middleware_params:
   cors:
+    enabled: true
     max_age: 12
     allowed_origins:
     - http://localhost
@@ -348,14 +389,14 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(cors.InfoPageOptions{
-                        Cors: &cors.CorsOptions{
+                MiddlewareParams: infopage.InfoPageConfig{
+                        Cors: &infopage.InfoPageOptions{
                                 Enabled: true,
                                 Path: "/user_info",
                                 ShowAuthorizationHeader: true,
                                 AuthorizationKeyName: "token",
                         },
-                }),
+                },
             },
         },
 }
@@ -402,14 +443,14 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(jwt.JwtConfig{
+                MiddlewareParams: jwt.JwtConfig{
                         Ldap: &jwt.JwtOptions{
                                 Enabled: true,
                                 Alg: "RS256", // this is mandatory due to security issue: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries
                                 Secret: "hmac secret or ECDSA/RSA public key", 
                                 Issuer: "https://issuer.which.sign.token.com",
                         },
-                }),
+                },
             },
         },
 }
@@ -455,7 +496,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(ldap.LdapConfig{
+                MiddlewareParams: ldap.LdapConfig{
                         Ldap: &ldap.LdapOptions{
                                 Enabled: true,
                                 BindDn: "uid=readonly,dc=com",
@@ -468,7 +509,7 @@ configHandler := gobis.DefaultHandlerConfig{
                                 GroupSearchBaseDns: "ou=Group,dc=example,dc=com",
                                 GroupSearchFilter: "(&(objectClass=posixGroup)(memberUid=%s))",
                         },
-                }),
+                },
             },
         },
 }
@@ -522,7 +563,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(oauth2.Oauth2Config{
+                MiddlewareParams: oauth2.Oauth2Config{
                         Ldap: &oauth2.Oauth2Options{
                                 Enabled: true,
                                 ClientId: "myclientid",
@@ -537,7 +578,7 @@ configHandler := gobis.DefaultHandlerConfig{
                                 AuthKey: "my-super-strong-auth-key",
                                 Scopes: []string{},
                         },
-                }),
+                },
             },
         },
 }
@@ -591,11 +632,11 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(ratelimit.RateLimitConfig{
+                MiddlewareParams: ratelimit.RateLimitConfig{
                         RateLimit: &ratelimit.RateLimitOptions{
                                 Enabled: true,
                         },
-                }),
+                },
             },
         },
 }
@@ -632,12 +673,12 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(secure.SecureConfig{
+                MiddlewareParams: secure.SecureConfig{
                         RateLimit: &secure.SecureOptions{
                                 Enabled: true,
                                 AllowedHosts: []string{"ssl.example.com"},
                         },
-                }),
+                },
             },
         },
 }
@@ -675,11 +716,11 @@ configHandler := gobis.DefaultHandlerConfig{
                 Name: "myapi",
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                MiddlewareParams: gobis.InterfaceToMap(trace.TraceConfig{
+                MiddlewareParams: trace.TraceConfig{
                         Trace: &trace.TraceOptions{
                                 Enabled: true,
                         },
-                }),
+                },
             },
         },
 }
@@ -698,3 +739,5 @@ middleware_params:
 ### Credits
 
 - https://github.com/vulcand/oxy
+
+
