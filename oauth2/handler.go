@@ -47,11 +47,7 @@ func (h Oauth2Handler) reqHasToken(req *http.Request) bool {
 	return strings.HasPrefix(authHeader, strings.ToLower(h.options.TokenType))
 }
 func (h Oauth2Handler) reqToken(req *http.Request) string {
-	if !h.reqHasToken(req) {
-		return ""
-	}
-	authHeader := strings.ToLower(req.Header.Get("Authorization"))
-	return strings.Split(authHeader, " ")[1]
+	return req.Header.Get("Authorization")
 }
 func (h Oauth2Handler) getSession(req *http.Request) (*sessions.Session, error) {
 	return h.store.Get(req, "session-"+gobis.RouteName(req))
