@@ -55,6 +55,9 @@ type Oauth2Options struct {
 	// By default when login or logout user will be redirect to the previous url
 	// If this params is set, user will be redirected to this url after login or logout
 	RedirectLogUrl string `mapstructure:"redirect_log_url" json:"redirect_log_url" yaml:"redirect_log_url"`
+	// Set to true to pass the oauth2 token to upstream through authorization header
+	// This is false by default
+	PassToken bool `mapstructure:"pass_token" json:"pass_token" yaml:"pass_token"`
 }
 type Oauth2 struct{}
 

@@ -53,7 +53,11 @@ func (h Oauth2Handler) getSession(req *http.Request) (*sessions.Session, error) 
 	return h.store.Get(req, "session-"+gobis.RouteName(req))
 }
 func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	gobis.UndirtHeader(req, "Authorization")
+	if h.options.PassToken {
+		gobis.UndirtHeader(req, "Authorization")
+	} else {
+		gobis.DirtHeader(req, "Authorization")
+	}
 	if h.options.UseRedirectUrl {
 		h.oauth2Conf.RedirectURL = h.callbackCreateFunc(req).String()
 	}

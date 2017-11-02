@@ -577,6 +577,7 @@ configHandler := gobis.DefaultHandlerConfig{
                                 LogoutPath: "/logout",
                                 AuthKey: "my-super-strong-auth-key",
                                 Scopes: []string{},
+                                PassToken: false,
                         },
                 },
             },
@@ -602,6 +603,7 @@ middleware_params:
     logout_path: /logout
     use_route_transport: true
     insecure_skip_verify: false
+    pass_token: false
     scopes: []
 ```
 
