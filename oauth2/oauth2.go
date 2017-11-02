@@ -86,10 +86,19 @@ func (Oauth2) Handler(proxyRoute gobis.ProxyRoute, params interface{}, next http
 		utils.CreateClient(options.ClientRouteOption, proxyRoute),
 		func(req *http.Request) *url.URL {
 			path := proxyRoute.CreateRoutePath(options.LoginPath)
-			upstreamUrl := proxyRoute.UpstreamUrl(req)
-			upstreamUrl.Path = path
-			upstreamUrl.RawQuery = ""
-			return upstreamUrl
+			var redirectUrl *url.URL
+			if proxyRoute.ForwardedHeader == "" {
+				proto := "https"
+				if req.TLS == nil {
+					proto = "http"
+				}
+				redirectUrl, _ = url.Parse(proto + "://" + req.Host)
+			} else {
+				redirectUrl = proxyRoute.UpstreamUrl(req)
+			}
+			redirectUrl.Path = path
+			redirectUrl.RawQuery = ""
+			return redirectUrl
 		},
 	)
 	return oauth2Handler, nil
