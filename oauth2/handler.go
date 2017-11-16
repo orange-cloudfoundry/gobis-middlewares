@@ -13,11 +13,14 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"time"
 )
 
 const tokenSessKey = "token"
 const stateSessKey = "state"
 const refererSessKey = "referer"
+const expiresSessKey = "exp"
+const timeLayout = "2006-01-02 15:04:05.999999999 -0700 MST"
 
 type Oauth2Handler struct {
 	options            *Oauth2Options
@@ -41,6 +44,19 @@ func NewOauth2Handler(options *Oauth2Options, next http.Handler, client *http.Cl
 
 func (h Oauth2Handler) sessionHasToken(sess *sessions.Session) bool {
 	return sess.Values[tokenSessKey] != nil
+}
+
+// We check expiration only for issue in chromium: https://bugs.chromium.org/p/chromium/issues/detail?id=128513
+// We will handle it ourself
+func (h Oauth2Handler) sessionHasExpired(sess *sessions.Session) bool {
+	if _, ok := sess.Values[expiresSessKey]; !ok {
+		return true
+	}
+	expTime, err := time.Parse(timeLayout, sess.Values[expiresSessKey].(string))
+	if err != nil {
+		panic(err)
+	}
+	return expTime.Before(time.Now())
 }
 func (h Oauth2Handler) reqHasToken(req *http.Request) bool {
 	authHeader := strings.ToLower(req.Header.Get("Authorization"))
@@ -74,7 +90,7 @@ func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	if h.reqHasToken(req) || h.sessionHasToken(sess) {
+	if h.reqHasToken(req) || (h.sessionHasToken(sess) && !h.sessionHasExpired(sess)) {
 		h.serveNext(w, req, sess)
 		return
 	}
@@ -174,10 +190,13 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 	delete(sess.Values, stateSessKey)
-	sess.Options.MaxAge = token.Expiry.Second()
+	sess.Options.MaxAge = round(token.Expiry.Sub(time.Now()).Seconds())
 	tokenStr := token.TokenType + " " + token.AccessToken
 	req.Header.Set("Authorization", tokenStr)
 	sess.Values[tokenSessKey] = tokenStr
+	// We set expiration only for issue in chromium: https://bugs.chromium.org/p/chromium/issues/detail?id=128513
+	// We will handle it ourself
+	sess.Values[expiresSessKey] = token.Expiry.Format(timeLayout)
 
 	gobis.AddGroups(req, h.options.Scopes...)
 	h.retrieveUserInfo(req, ctx, token)
@@ -272,4 +291,13 @@ func createOauth2Conf(options *Oauth2Options) *oauth2.Config {
 			TokenURL: options.AccessTokenUri,
 		},
 	}
+}
+func round(f float64) int {
+	if f < -0.5 {
+		return int(f - 0.5)
+	}
+	if f > 0.5 {
+		return int(f + 0.5)
+	}
+	return 0
 }
