@@ -228,18 +228,30 @@ func (h Oauth2Handler) retrieveUserInfo(req *http.Request, ctx context.Context, 
 	if err != nil {
 		panic(fmt.Sprintf("Error when retrieving user information: %s", err.Error()))
 	}
+	username := ""
 	usrRegex := regexp.MustCompile("(?i)^(user|username|user_name|user_id)$")
 	for key, value := range userInfo {
 		if usrRegex.MatchString(key) {
+			username = fmt.Sprint(value)
+		}
+	}
+	if email, ok := userInfo["email"]; ok && username == "" {
+		username = fmt.Sprint(email)
+	}
+	if login, ok := userInfo["login"]; ok && username == "" {
+		username = fmt.Sprint(login)
+	}
+	if username != "" {
+		gobis.SetUsername(req, username)
+		return
+	}
+	idRegex := regexp.MustCompile("(?i)^(user_id)$")
+	for key, value := range userInfo {
+		if idRegex.MatchString(key) {
 			gobis.SetUsername(req, fmt.Sprint(value))
 		}
 	}
-	if email, ok := userInfo["email"]; ok && gobis.Username(req) == "" {
-		gobis.SetUsername(req, fmt.Sprint(email))
-	}
-	if login, ok := userInfo["login"]; ok && gobis.Username(req) == "" {
-		gobis.SetUsername(req, fmt.Sprint(login))
-	}
+
 }
 func createSessStore(authKey, encKey string) *sessions.CookieStore {
 	keyPairs := [][]byte{
