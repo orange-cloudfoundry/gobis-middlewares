@@ -260,6 +260,12 @@ func (h Oauth2Handler) retrieveUserInfo(req *http.Request, ctx context.Context, 
 	if login, ok := userInfo["login"]; ok && username == "" {
 		username = fmt.Sprint(login)
 	}
+	if login, ok := userInfo["user_name"]; ok && username == "" {
+		username = fmt.Sprint(login)
+	}
+	if login, ok := userInfo["username"]; ok && username == "" {
+		username = fmt.Sprint(login)
+	}
 	if username != "" {
 		gobis.SetUsername(req, username)
 		return
