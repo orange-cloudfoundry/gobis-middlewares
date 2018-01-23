@@ -11,7 +11,7 @@ type Oauth2Config struct {
 	Oauth2 *Oauth2Options `mapstructure:"oauth2" json:"oauth2" yaml:"oauth2"`
 }
 type Oauth2Options struct {
-	utils.ClientRouteOption
+	utils.ClientRouteOption `mapstructure:",squash"`
 	// enable oauth2 middleware
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	// Uri to create authoriation code e.g.: https://my.uaa.local/oauth/authorize

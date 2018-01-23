@@ -18,7 +18,7 @@ type Basic2TokenConfig struct {
 	Basic2Token *Basic2TokenOptions `mapstructure:"basic2token" json:"basic2token" yaml:"basic2token"`
 }
 type Basic2TokenOptions struct {
-	utils.ClientRouteOption
+	utils.ClientRouteOption `mapstructure:",squash"`
 	// Uri to retrieve access token e.g.: https://my.uaa.local/oauth/token
 	AccessTokenUri string `mapstructure:"access_token_uri" json:"access_token_uri" yaml:"access_token_uri"`
 	// Client id which will connect user on behalf him
