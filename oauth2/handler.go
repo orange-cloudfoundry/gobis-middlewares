@@ -248,7 +248,7 @@ func (h Oauth2Handler) retrieveUserInfo(req *http.Request, ctx context.Context, 
 		panic(fmt.Sprintf("Error when retrieving user information: %s", err.Error()))
 	}
 	username := ""
-	usrRegex := regexp.MustCompile("(?i)^(user|username|user_name|user_id)$")
+	usrRegex := regexp.MustCompile("(?i)^(user|username|user_name)$")
 	for key, value := range userInfo {
 		if usrRegex.MatchString(key) {
 			username = fmt.Sprint(value)
@@ -258,12 +258,6 @@ func (h Oauth2Handler) retrieveUserInfo(req *http.Request, ctx context.Context, 
 		username = fmt.Sprint(email)
 	}
 	if login, ok := userInfo["login"]; ok && username == "" {
-		username = fmt.Sprint(login)
-	}
-	if login, ok := userInfo["user_name"]; ok && username == "" {
-		username = fmt.Sprint(login)
-	}
-	if login, ok := userInfo["username"]; ok && username == "" {
 		username = fmt.Sprint(login)
 	}
 	if username != "" {
