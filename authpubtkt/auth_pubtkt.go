@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+const XRemoteUserData = "X-Remote-User-Data"
+
 type AuthPubTktConfig struct {
 	AuthPubTkt *AuthPubTktOptions `mapstructure:"auth_pubtkt" json:"auth_pubtkt" yaml:"auth_pubtkt"`
 }
@@ -97,6 +99,7 @@ func (AuthPubTkt) Handler(proxyRoute gobis.ProxyRoute, params interface{}, next 
 		req.Header.Set("Authorization", base64.StdEncoding.EncodeToString([]byte(ticket.String())))
 		gobis.SetUsername(req, ticket.Uid)
 		gobis.AddGroups(req, ticket.Tokens...)
+		req.Header.Add(XRemoteUserData, ticket.Udata)
 		next.ServeHTTP(w, req)
 	})
 	return pubtkt.NewAuthPubTktHandler(pubtkt.AuthPubTktOptions{
