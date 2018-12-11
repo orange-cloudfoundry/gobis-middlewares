@@ -7,6 +7,7 @@ import (
 	"github.com/orange-cloudfoundry/gobis-middlewares/basicauth"
 	"github.com/orange-cloudfoundry/gobis-middlewares/casbin"
 	"github.com/orange-cloudfoundry/gobis-middlewares/cbreaker"
+	"github.com/orange-cloudfoundry/gobis-middlewares/cf_checkpermission"
 	"github.com/orange-cloudfoundry/gobis-middlewares/connlimit"
 	"github.com/orange-cloudfoundry/gobis-middlewares/cors"
 	"github.com/orange-cloudfoundry/gobis-middlewares/infopage"
@@ -32,6 +33,7 @@ func DefaultHandlers() []gobis.MiddlewareHandler {
 		authpubtkt.NewAuthPubTkt(),
 		jwt.NewJwt(),
 		casbin.NewCasbin(),
+		cf_checkpermission.NewCfCheckPermission(),
 		cbreaker.NewCircuitBreaker(),
 		ratelimit.NewRateLimit(),
 		connlimit.NewConnLimit(),

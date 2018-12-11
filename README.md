@@ -8,6 +8,7 @@ List:
 - [basic2token](#basic2token): Give the ability to connect an user over basic auth, retrieve a token from an oauth2 server with user information and forward the request with this token.
 - [basic auth](#basic-auth)
 - [casbin](#casbin): An authorization library that supports access control models like ACL, RBAC, ABAC
+- [cf check permission](#cf-check-permission): Check if user has access to a service instance on a cloud foundry platform.
 - [circuit breaker](#circuit-breaker)
 - [conn limit](#conn-limit)
 - [cors](#cors)
@@ -239,6 +240,50 @@ this allow you, if you use ldap middleware, to pass a group name found as a `sub
 ### Credits
 
 - https://github.com/casbin/casbin
+
+## Cf check permission
+
+Check if user has access to a service instance on a cloud foundry platform.
+
+See godoc for [CorsOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/cf_checkpermission#CfCheckPermissionOptions) to know more about parameters.
+
+**You must use this middleware with [oauth2](#oauth2) middleware, client must have scope `cloud_controller_service_permissions.read`**
+
+### Use programmatically
+
+```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/cf_checkpermission"
+
+configHandler := gobis.DefaultHandlerConfig{
+        Routes: []gobis.ProxyRoute{
+            {
+                Name: "myapi",
+                Path: "/app/**",
+                Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
+                MiddlewareParams: cf_checkpermission.CfCheckPermissionConfig{
+                        Cors: &cf_checkpermission.CfCheckPermissionOptions{
+                                Enabled: true,
+                                ApiEndpoint: "https://api.my.cloudfoundry",
+                                InstanceGUID: "service-instance-guid",
+                        },
+                },
+            },
+        },
+}
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(cors.NewCors()))
+// create your server
+```
+
+### Use in config file
+
+```yaml
+middleware_params:
+  cf_checkpermission:
+    enabled: true
+    api_endpoint: https://api.my.cloudfoundry
+    instance_guid: service-instance-guid
+    only_manager: false
+```
 
 
 ## Circuit breaker
@@ -612,6 +657,7 @@ middleware_params:
 - If user info uri is set username will retrieve from it and be passed through [context username](https://godoc.org/github.com/orange-cloudfoundry/gobis#UserName) to use it in others middlewares
 - Scopes will be loaded as groups and others middlewares will
  be able to find groups for the current user by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
+- Other middlewares can access to http client with oauth2 context by calling `oauth2.Oauth2Client(req)` where req is `*http.Request` variable
 
 ### Credits
 

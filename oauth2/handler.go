@@ -119,11 +119,7 @@ func (h Oauth2Handler) serveNext(w http.ResponseWriter, req *http.Request, sess 
 	if h.sessionHasToken(sess) {
 		req.Header.Set("Authorization", sess.Values[tokenSessKey].(string))
 	}
-	if sess.Values["username"] != nil {
-		gobis.SetUsername(req, sess.Values["username"].(string))
-		h.next.ServeHTTP(w, req)
-		return
-	}
+
 	token := sess.Values[tokenSessKey].(string)
 	tokenSplit := strings.Split(token, " ")
 	tokenType := ""
@@ -133,10 +129,19 @@ func (h Oauth2Handler) serveNext(w http.ResponseWriter, req *http.Request, sess 
 	}
 	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, h.client)
 	req.Header.Set("Authorization", sess.Values[tokenSessKey].(string))
-	h.retrieveUserInfo(req, ctx, &oauth2.Token{
+	oauth2Client := h.oauth2Conf.Client(ctx, &oauth2.Token{
 		TokenType:   tokenType,
 		AccessToken: token,
 	})
+	setOauth2Client(req, oauth2Client)
+
+	if sess.Values["username"] != nil {
+		gobis.SetUsername(req, sess.Values["username"].(string))
+		h.next.ServeHTTP(w, req)
+		return
+	}
+
+	h.retrieveUserInfo(req, oauth2Client)
 	sess.Values["username"] = gobis.Username(req)
 	sess.Save(req, w)
 	h.next.ServeHTTP(w, req)
@@ -199,7 +204,9 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 	sess.Values[expiresSessKey] = token.Expiry.Format(timeLayout)
 
 	gobis.AddGroups(req, h.options.Scopes...)
-	h.retrieveUserInfo(req, ctx, token)
+	oauth2Client := h.oauth2Conf.Client(ctx, token)
+	setOauth2Client(req, oauth2Client)
+	h.retrieveUserInfo(req, oauth2Client)
 	sess.Values["username"] = gobis.Username(req)
 	redirectUrl := h.options.RedirectLogUrl
 	if redirectUrl == "" && sess.Values[refererSessKey] != nil {
@@ -220,11 +227,10 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, redirectUrl, 302)
 	return
 }
-func (h Oauth2Handler) retrieveUserInfo(req *http.Request, ctx context.Context, token *oauth2.Token) {
+func (h Oauth2Handler) retrieveUserInfo(req *http.Request, c *http.Client) {
 	if h.options.UserInfoUri == "" {
 		return
 	}
-	c := h.oauth2Conf.Client(ctx, token)
 	userReq, err := http.NewRequest("GET", h.options.UserInfoUri, nil)
 	if err != nil {
 		panic(err)
