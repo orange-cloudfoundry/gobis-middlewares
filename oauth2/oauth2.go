@@ -58,6 +58,9 @@ type Oauth2Options struct {
 	// Set to true to pass the oauth2 token to upstream through authorization header
 	// This is false by default
 	PassToken bool `mapstructure:"pass_token" json:"pass_token" yaml:"pass_token"`
+	// Passthrough if a previous middleware already set user context
+	// This is helpful when you want add user with basic auth middleware
+	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
 }
 type Oauth2 struct{}
 

@@ -26,8 +26,8 @@ func DefaultHandlers() []gobis.MiddlewareHandler {
 	return []gobis.MiddlewareHandler{
 		cors.NewCors(),
 		secure.NewSecure(),
-		ldap.NewLdap(),
 		basicauth.NewBasicAuth(),
+		ldap.NewLdap(),
 		basic2token.NewBasic2Token(),
 		oauth2.NewOauth2(),
 		authpubtkt.NewAuthPubTkt(),

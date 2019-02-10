@@ -1,16 +1,16 @@
 package jwt
 
 import (
-	"github.com/orange-cloudfoundry/gobis"
-	"net/http"
+	"crypto/subtle"
+	"fmt"
 	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
-	"fmt"
+	"github.com/orange-cloudfoundry/gobis"
+	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
+	log "github.com/sirupsen/logrus"
+	"net/http"
 	"regexp"
 	"strings"
-	"crypto/subtle"
-	log "github.com/sirupsen/logrus"
-	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
 )
 
 type JwtConfig struct {
@@ -18,22 +18,25 @@ type JwtConfig struct {
 }
 type JwtOptions struct {
 	// enable jwt middleware
-	Enabled             bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	// Algorithm to use to validate the token
 	// This is mandatory due to a security issue (see: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries)
-	Alg                 string `mapstructure:"alg" json:"alg" yaml:"alg"`
+	Alg string `mapstructure:"alg" json:"alg" yaml:"alg"`
 	// Secret or private key to verify the jwt
 	// This is required
-	Secret              string `mapstructure:"secret" json:"secret" yaml:"secret"`
+	Secret string `mapstructure:"secret" json:"secret" yaml:"secret"`
 	// When set, all requests with the OPTIONS method will use authentication
 	// Default: false
 	EnableAuthOnOptions bool `mapstructure:"enable_auth_on_options" json:"enable_auth_on_options" yaml:"enable_auth_on_options"`
 	// If not empty, it will validate that the jwt contains this audience
-	Audience            string `mapstructure:"audience" json:"audience" yaml:"audience"`
+	Audience string `mapstructure:"audience" json:"audience" yaml:"audience"`
 	// If not empty, it will validate that the jwt contains this issuer
-	Issuer              string `mapstructure:"issuer" json:"issuer" yaml:"issuer"`
+	Issuer string `mapstructure:"issuer" json:"issuer" yaml:"issuer"`
 	// Add custom check to verify that the jwt contains those specified claims with specified value
-	CustomVerify        map[string]string `mapstructure:"custom_verify" json:"custom_verify" yaml:"custom_verify"`
+	CustomVerify map[string]string `mapstructure:"custom_verify" json:"custom_verify" yaml:"custom_verify"`
+	// Passthrough if a previous middleware already set user context
+	// This is helpful when you want add user with basic auth middleware
+	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
 }
 
 type Jwt struct{}
@@ -73,23 +76,28 @@ func (Jwt) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http
 			http.Error(w, msg, 403)
 		},
 		EnableAuthOnOptions: options.EnableAuthOnOptions,
-		Debug: log.GetLevel() == log.DebugLevel,
+		Debug:               log.GetLevel() == log.DebugLevel,
 	})
-	return NewJwtHandler(jwtMiddleware, handler), nil
+	return NewJwtHandler(jwtMiddleware, handler, options.TrustCurrentUser), nil
 }
 func (Jwt) Schema() interface{} {
 	return JwtConfig{}
 }
 
 type JwtHandler struct {
-	jwtMiddleware *jwtmiddleware.JWTMiddleware
-	next          http.Handler
+	jwtMiddleware    *jwtmiddleware.JWTMiddleware
+	next             http.Handler
+	trustCurrentUser bool
 }
 
-func NewJwtHandler(jwtMiddleware *jwtmiddleware.JWTMiddleware, next http.Handler) http.Handler {
-	return &JwtHandler{jwtMiddleware, next}
+func NewJwtHandler(jwtMiddleware *jwtmiddleware.JWTMiddleware, next http.Handler, trustCurrentUser bool) http.Handler {
+	return &JwtHandler{jwtMiddleware, next, trustCurrentUser}
 }
 func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if h.trustCurrentUser && gobis.Username(req) != "" {
+		h.next.ServeHTTP(w, req)
+		return
+	}
 	err := h.jwtMiddleware.CheckJWT(w, req)
 	if err != nil {
 		return

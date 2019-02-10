@@ -73,6 +73,10 @@ func (h Oauth2Handler) getSession(req *http.Request) (*sessions.Session, error) 
 }
 
 func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if h.options.TrustCurrentUser && gobis.Username(req) != "" {
+		h.next.ServeHTTP(w, req)
+		return
+	}
 	if h.options.PassToken {
 		gobis.UndirtHeader(req, "Authorization")
 	} else {

@@ -34,6 +34,9 @@ type Basic2TokenOptions struct {
 	TokenType string `mapstructure:"token_type" json:"token_type" yaml:"token_type"`
 	// By default request token is sent by post form, set to true to send as json
 	ParamsAsJson bool `mapstructure:"params_as_json" json:"params_as_json" yaml:"params_as_json"`
+	// Passthrough if a previous middleware already set user context
+	// This is helpful when you want add user with basic auth middleware
+	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
 }
 type AccessTokenResponse struct {
 	AccessToken  string `json:"access_token"`
@@ -152,6 +155,10 @@ func (h Basic2Token) Handler(proxyRoute gobis.ProxyRoute, params interface{}, ha
 	client := utils.CreateClient(options.ClientRouteOption, proxyRoute)
 	basic2TokenAuth := NewBasic2TokenAuth(client, *options)
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if options.TrustCurrentUser && gobis.Username(req) != "" {
+			handler.ServeHTTP(w, req)
+			return
+		}
 		// if token already passed, the handler go to next handler without try to do oauth
 		authHeader := strings.ToLower(req.Header.Get("Authorization"))
 		if strings.HasPrefix(authHeader, strings.ToLower(options.TokenType)) {

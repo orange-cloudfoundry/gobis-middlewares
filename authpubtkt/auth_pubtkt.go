@@ -77,6 +77,9 @@ type AuthPubTktOptions struct {
 	// If true and TKTCheckIpEnabled is true it will check ip from header X-Forwarded-For instead client remote ip
 	// default: false
 	CheckXForwardedIp bool `mapstructure:"check_xforwarded_ip" json:"check_xforwarded_ip" yaml:"check_xforwarded_ip"`
+	// Passthrough if a previous middleware already set user context
+	// This is helpful when you want add user with basic auth middleware
+	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
 }
 
 type AuthPubTkt struct{}
@@ -91,6 +94,10 @@ func (AuthPubTkt) Handler(proxyRoute gobis.ProxyRoute, params interface{}, next 
 		return next, nil
 	}
 	hijackHandler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if options.TrustCurrentUser && gobis.Username(req) != "" {
+			next.ServeHTTP(w, req)
+			return
+		}
 		ticket := pubtkt.TicketRequest(req)
 		if ticket == nil {
 			return
