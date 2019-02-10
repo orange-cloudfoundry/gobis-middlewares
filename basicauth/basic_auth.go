@@ -13,7 +13,8 @@ import (
 
 type BasicAuthOptions []BasicAuthOption
 type BasicAuthConfig struct {
-	BasicAuth BasicAuthOptions `mapstructure:"basic_auth" json:"basic_auth" yaml:"basic_auth"`
+	BasicAuth            BasicAuthOptions `mapstructure:"basic_auth" json:"basic_auth" yaml:"basic_auth"`
+	BasicAuthPassthrough bool             `mapstructure:"basic_auth_passthrough" json:"basic_auth_passthrough" yaml:"basic_auth_passthrough"`
 }
 type BasicAuthOption struct {
 	User     string   `mapstructure:"user" json:"user" yaml:"user"`
@@ -22,13 +23,16 @@ type BasicAuthOption struct {
 	Crypted  bool     `mapstructure:"crypted" json:"crypted" yaml:"crypted"`
 }
 
-func (b BasicAuthOptions) Auth(user string, password string, req *http.Request) bool {
+func (b BasicAuthOptions) Auth(user, password string, passthrough bool, req *http.Request) bool {
 	gobis.DirtHeader(req, "Authorization")
-	gobis.SetUsername(req, user)
 	foundUser := b.findByUser(user)
+	if foundUser.User == "" && passthrough {
+		return true
+	}
 	if foundUser.User == "" {
 		return false
 	}
+	gobis.SetUsername(req, user)
 	gobis.AddGroups(req, foundUser.Groups...)
 	// Compare the supplied credentials to those set in our options
 	if foundUser.Crypted {
@@ -74,7 +78,9 @@ func (BasicAuth) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handle
 		return handler, nil
 	}
 	return httpauth.BasicAuth(httpauth.AuthOptions{
-		AuthFunc: config.BasicAuth.Auth,
+		AuthFunc: func(user, password string, req *http.Request) bool {
+			return config.BasicAuth.Auth(user, password, config.BasicAuthPassthrough, req)
+		},
 	})(handler), nil
 }
 func (BasicAuth) Schema() interface{} {
