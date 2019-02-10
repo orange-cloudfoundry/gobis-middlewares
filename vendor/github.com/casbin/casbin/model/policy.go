@@ -15,25 +15,27 @@
 package model
 
 import (
+	"github.com/casbin/casbin/log"
+	"github.com/casbin/casbin/rbac"
 	"github.com/casbin/casbin/util"
 )
 
 // BuildRoleLinks initializes the roles in RBAC.
-func (model Model) BuildRoleLinks() {
+func (model Model) BuildRoleLinks(rm rbac.RoleManager) {
 	for _, ast := range model["g"] {
-		ast.buildRoleLinks()
+		ast.buildRoleLinks(rm)
 	}
 }
 
 // PrintPolicy prints the policy to log.
 func (model Model) PrintPolicy() {
-	util.LogPrint("Policy:")
+	log.LogPrint("Policy:")
 	for key, ast := range model["p"] {
-		util.LogPrint(key, ": ", ast.Value, ": ", ast.Policy)
+		log.LogPrint(key, ": ", ast.Value, ": ", ast.Policy)
 	}
 
 	for key, ast := range model["g"] {
-		util.LogPrint(key, ": ", ast.Value, ": ", ast.Policy)
+		log.LogPrint(key, ": ", ast.Value, ": ", ast.Policy)
 	}
 }
 
@@ -60,7 +62,7 @@ func (model Model) GetFilteredPolicy(sec string, ptype string, fieldIndex int, f
 	for _, rule := range model[sec][ptype].Policy {
 		matched := true
 		for i, fieldValue := range fieldValues {
-			if rule[fieldIndex+i] != fieldValue {
+			if fieldValue != "" && rule[fieldIndex+i] != fieldValue {
 				matched = false
 				break
 			}
@@ -113,7 +115,7 @@ func (model Model) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int
 	for _, rule := range model[sec][ptype].Policy {
 		matched := true
 		for i, fieldValue := range fieldValues {
-			if rule[fieldIndex+i] != fieldValue {
+			if fieldValue != "" && rule[fieldIndex+i] != fieldValue {
 				matched = false
 				break
 			}
@@ -139,7 +141,6 @@ func (model Model) GetValuesForFieldInPolicy(sec string, ptype string, fieldInde
 	}
 
 	util.ArrayRemoveDuplicates(&values)
-	// sort.Strings(values)
 
 	return values
 }

@@ -15,8 +15,11 @@
 package model
 
 import (
+	"errors"
+	"strings"
+
+	"github.com/casbin/casbin/log"
 	"github.com/casbin/casbin/rbac"
-	"github.com/casbin/casbin/util"
 )
 
 // Assertion represents an expression in a section of the model.
@@ -26,19 +29,32 @@ type Assertion struct {
 	Value  string
 	Tokens []string
 	Policy [][]string
-	RM     *rbac.RoleManager
+	RM     rbac.RoleManager
 }
 
-func (ast *Assertion) buildRoleLinks() {
-	ast.RM = rbac.NewRoleManager(10)
+func (ast *Assertion) buildRoleLinks(rm rbac.RoleManager) {
+	ast.RM = rm
+	count := strings.Count(ast.Value, "_")
 	for _, rule := range ast.Policy {
-		if len(rule) == 2 {
+		if count < 2 {
+			panic(errors.New("the number of \"_\" in role definition should be at least 2"))
+		}
+		if len(rule) < count {
+			panic(errors.New("grouping policy elements do not meet role definition"))
+		}
+
+		if count == 2 {
+			// error intentionally ignored
 			ast.RM.AddLink(rule[0], rule[1])
-		} else if len(rule) == 3 {
+		} else if count == 3 {
+			// error intentionally ignored
 			ast.RM.AddLink(rule[0], rule[1], rule[2])
+		} else if count == 4 {
+			// error intentionally ignored
+			ast.RM.AddLink(rule[0], rule[1], rule[2], rule[3])
 		}
 	}
 
-	util.LogPrint("Role links for: " + ast.Key)
+	log.LogPrint("Role links for: " + ast.Key)
 	ast.RM.PrintRoles()
 }

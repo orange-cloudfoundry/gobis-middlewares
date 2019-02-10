@@ -58,16 +58,20 @@ func (h Oauth2Handler) sessionHasExpired(sess *sessions.Session) bool {
 	}
 	return expTime.Before(time.Now())
 }
+
 func (h Oauth2Handler) reqHasToken(req *http.Request) bool {
 	authHeader := strings.ToLower(req.Header.Get("Authorization"))
 	return strings.HasPrefix(authHeader, strings.ToLower(h.options.TokenType))
 }
+
 func (h Oauth2Handler) reqToken(req *http.Request) string {
 	return req.Header.Get("Authorization")
 }
+
 func (h Oauth2Handler) getSession(req *http.Request) (*sessions.Session, error) {
-	return h.store.Get(req, "session-"+gobis.RouteName(req))
+	return h.store.Get(req, "session-oauth2-"+gobis.RouteName(req))
 }
+
 func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if h.options.PassToken {
 		gobis.UndirtHeader(req, "Authorization")
@@ -111,6 +115,7 @@ func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, authUrl, 302)
 	return
 }
+
 func (h Oauth2Handler) serveNext(w http.ResponseWriter, req *http.Request, sess *sessions.Session) {
 	if h.reqHasToken(req) {
 		sess.Values[tokenSessKey] = h.reqToken(req)
@@ -146,6 +151,7 @@ func (h Oauth2Handler) serveNext(w http.ResponseWriter, req *http.Request, sess 
 	sess.Save(req, w)
 	h.next.ServeHTTP(w, req)
 }
+
 func (h Oauth2Handler) LogoutHandler(w http.ResponseWriter, req *http.Request) {
 	sess, err := h.getSession(req)
 	if err != nil {
@@ -167,6 +173,7 @@ func (h Oauth2Handler) LogoutHandler(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, redirectUrl, 302)
 	return
 }
+
 func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 	if h.options.UseRedirectUrl {
 		h.oauth2Conf.RedirectURL = h.callbackCreateFunc(req).String()
@@ -227,6 +234,7 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, redirectUrl, 302)
 	return
 }
+
 func (h Oauth2Handler) retrieveUserInfo(req *http.Request, c *http.Client) {
 	if h.options.UserInfoUri == "" {
 		return
@@ -278,6 +286,7 @@ func (h Oauth2Handler) retrieveUserInfo(req *http.Request, c *http.Client) {
 	}
 
 }
+
 func createSessStore(authKey, encKey string) *sessions.CookieStore {
 	keyPairs := [][]byte{
 		[]byte(authKey),
@@ -287,6 +296,7 @@ func createSessStore(authKey, encKey string) *sessions.CookieStore {
 	}
 	return sessions.NewCookieStore(keyPairs...)
 }
+
 func createOauth2Conf(options *Oauth2Options) *oauth2.Config {
 	return &oauth2.Config{
 		ClientID:     options.ClientId,
@@ -298,6 +308,7 @@ func createOauth2Conf(options *Oauth2Options) *oauth2.Config {
 		},
 	}
 }
+
 func round(f float64) int {
 	if f < -0.5 {
 		return int(f - 0.5)

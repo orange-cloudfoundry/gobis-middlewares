@@ -14,194 +14,25 @@
 
 package rbac
 
-import (
-	"github.com/casbin/casbin/util"
-)
-
-// RoleManager represents the interface to manage the roles in RBAC.
-type RoleManager struct {
-	allRoles map[string]*Role
-	level    int
-}
-
-// NewRoleManager is the constructor for RoleManager.
-func NewRoleManager(level int) *RoleManager {
-	rm := RoleManager{}
-	rm.allRoles = make(map[string]*Role)
-	rm.level = level
-	return &rm
-}
-
-func (rm *RoleManager) hasRole(name string) bool {
-	_, ok := rm.allRoles[name]
-	return ok
-}
-
-func (rm *RoleManager) createRole(name string) *Role {
-	if !rm.hasRole(name) {
-		rm.allRoles[name] = newRole(name)
-	}
-
-	return rm.allRoles[name]
-}
-
-// AddLink adds the inheritance link between role: name1 and role: name2.
-// aka role: name1 inherits role: name2.
-// domain is a prefix to the roles.
-func (rm *RoleManager) AddLink(name1 string, name2 string, domain ...string) {
-	if len(domain) == 1 {
-		name1 = domain[0] + "::" + name1
-		name2 = domain[0] + "::" + name2
-	}
-
-	role1 := rm.createRole(name1)
-	role2 := rm.createRole(name2)
-	role1.addRole(role2)
-}
-
-// DeleteLink deletes the inheritance link between role: name1 and role: name2.
-// aka role: name1 does not inherit role: name2 any more.
-// domain is a prefix to the roles.
-func (rm *RoleManager) DeleteLink(name1 string, name2 string, domain ...string) {
-	if len(domain) == 1 {
-		name1 = domain[0] + "::" + name1
-		name2 = domain[0] + "::" + name2
-	}
-
-	if !rm.hasRole(name1) || !rm.hasRole(name2) {
-		return
-	}
-
-	role1 := rm.createRole(name1)
-	role2 := rm.createRole(name2)
-	role1.deleteRole(role2)
-}
-
-// HasLink determines whether role: name1 inherits role: name2.
-// domain is a prefix to the roles.
-func (rm *RoleManager) HasLink(name1 string, name2 string, domain ...string) bool {
-	if len(domain) == 1 {
-		name1 = domain[0] + "::" + name1
-		name2 = domain[0] + "::" + name2
-	}
-
-	if name1 == name2 {
-		return true
-	}
-
-	if !rm.hasRole(name1) || !rm.hasRole(name2) {
-		return false
-	}
-
-	role1 := rm.createRole(name1)
-	return role1.hasRole(name2, rm.level)
-}
-
-// GetRoles gets the roles that a subject inherits.
-func (rm *RoleManager) GetRoles(name string) []string {
-	if !rm.hasRole(name) {
-		return nil
-	}
-
-	return rm.createRole(name).getRoles()
-}
-
-// GetUsers gets the users that inherits a subject.
-func (rm *RoleManager) GetUsers(name string) []string {
-	if !rm.hasRole(name) {
-		return nil
-	}
-
-	names := []string{}
-	for _, role := range rm.allRoles {
-		if role.hasDirectRole(name) {
-			names = append(names, role.name)
-		}
-	}
-	return names
-}
-
-// PrintRoles prints all the roles to log.
-func (rm *RoleManager) PrintRoles() {
-	for _, role := range rm.allRoles {
-		util.LogPrint(role.toString())
-	}
-}
-
-// Role represents the data structure for a role in RBAC.
-type Role struct {
-	name  string
-	roles []*Role
-}
-
-func newRole(name string) *Role {
-	r := Role{}
-	r.name = name
-	return &r
-}
-
-func (r *Role) addRole(role *Role) {
-	for _, rr := range r.roles {
-		if rr.name == role.name {
-			return
-		}
-	}
-
-	r.roles = append(r.roles, role)
-}
-
-func (r *Role) deleteRole(role *Role) {
-	for i, rr := range r.roles {
-		if rr.name == role.name {
-			r.roles = append(r.roles[:i], r.roles[i+1:]...)
-			return
-		}
-	}
-}
-
-func (r *Role) hasRole(name string, level int) bool {
-	if r.name == name {
-		return true
-	}
-
-	if level <= 0 {
-		return false
-	}
-
-	for _, role := range r.roles {
-		if role.hasRole(name, level-1) {
-			return true
-		}
-	}
-	return false
-}
-
-func (r *Role) hasDirectRole(name string) bool {
-	for _, role := range r.roles {
-		if role.name == name {
-			return true
-		}
-	}
-
-	return false
-}
-
-func (r *Role) toString() string {
-	names := ""
-	for i, role := range r.roles {
-		if i == 0 {
-			names += role.name
-		} else {
-			names += ", " + role.name
-		}
-	}
-	return r.name + " < " + names
-}
-
-func (r *Role) getRoles() []string {
-	names := []string{}
-	for _, role := range r.roles {
-		names = append(names, role.name)
-	}
-	return names
+// RoleManager provides interface to define the operations for managing roles.
+type RoleManager interface {
+	// Clear clears all stored data and resets the role manager to the initial state.
+	Clear() error
+	// AddLink adds the inheritance link between two roles. role: name1 and role: name2.
+	// domain is a prefix to the roles (can be used for other purposes).
+	AddLink(name1 string, name2 string, domain ...string) error
+	// DeleteLink deletes the inheritance link between two roles. role: name1 and role: name2.
+	// domain is a prefix to the roles (can be used for other purposes).
+	DeleteLink(name1 string, name2 string, domain ...string) error
+	// HasLink determines whether a link exists between two roles. role: name1 inherits role: name2.
+	// domain is a prefix to the roles (can be used for other purposes).
+	HasLink(name1 string, name2 string, domain ...string) (bool, error)
+	// GetRoles gets the roles that a user inherits.
+	// domain is a prefix to the roles (can be used for other purposes).
+	GetRoles(name string, domain ...string) ([]string, error)
+	// GetUsers gets the users that inherits a role.
+	// domain is a prefix to the users (can be used for other purposes).
+	GetUsers(name string, domain ...string) ([]string, error)
+	// PrintRoles prints all the roles to log.
+	PrintRoles() error
 }

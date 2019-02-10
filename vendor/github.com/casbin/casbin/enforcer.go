@@ -15,24 +15,18 @@
 package casbin
 
 import (
+	"errors"
 	"fmt"
-	"reflect"
 
 	"github.com/Knetic/govaluate"
-	"github.com/casbin/casbin/file-adapter"
+	"github.com/casbin/casbin/effect"
+	"github.com/casbin/casbin/log"
 	"github.com/casbin/casbin/model"
 	"github.com/casbin/casbin/persist"
+	"github.com/casbin/casbin/persist/file-adapter"
+	"github.com/casbin/casbin/rbac"
+	"github.com/casbin/casbin/rbac/default-role-manager"
 	"github.com/casbin/casbin/util"
-)
-
-// Effect is the result for a policy rule.
-type Effect int
-
-// Values for policy effect.
-const (
-	EffectAllow Effect = iota
-	EffectIndeterminate
-	EffectDeny
 )
 
 // Enforcer is the main interface for authorization enforcement and policy management.
@@ -40,16 +34,20 @@ type Enforcer struct {
 	modelPath string
 	model     model.Model
 	fm        model.FunctionMap
+	eft       effect.Effector
 
 	adapter persist.Adapter
+	watcher persist.Watcher
+	rm      rbac.RoleManager
 
-	enabled  bool
-	autoSave bool
+	enabled            bool
+	autoSave           bool
+	autoBuildRoleLinks bool
 }
 
 // NewEnforcer creates an enforcer via file or DB.
 // File:
-// e := casbin.NewEnforcer("path/to/basic_model.conf", "path/to/basic_policy.conf")
+// e := casbin.NewEnforcer("path/to/basic_model.conf", "path/to/basic_policy.csv")
 // MySQL DB:
 // a := mysqladapter.NewDBAdapter("mysql", "mysql_username:mysql_password@tcp(127.0.0.1:3306)/")
 // e := casbin.NewEnforcer("path/to/basic_model.conf", a)
@@ -57,32 +55,38 @@ func NewEnforcer(params ...interface{}) *Enforcer {
 	e := &Enforcer{}
 
 	parsedParamLen := 0
-	if len(params) >= 1 && reflect.TypeOf(params[len(params)-1]).Kind() == reflect.Bool {
-		enableLog := params[len(params)-1].(bool)
-		e.EnableLog(enableLog)
+	if len(params) >= 1 {
+		enableLog, ok := params[len(params)-1].(bool)
+		if ok {
+			e.EnableLog(enableLog)
 
-		parsedParamLen++
+			parsedParamLen++
+		}
 	}
 
 	if len(params)-parsedParamLen == 2 {
-		if reflect.TypeOf(params[0]).Kind() == reflect.String {
-			if reflect.TypeOf(params[1]).Kind() == reflect.String {
-				e.InitWithFile(params[0].(string), params[1].(string))
-			} else {
-				e.InitWithAdapter(params[0].(string), params[1].(persist.Adapter))
+		switch p0 := params[0].(type) {
+		case string:
+			switch p1 := params[1].(type) {
+			case string:
+				e.InitWithFile(p0, p1)
+			default:
+				e.InitWithAdapter(p0, p1.(persist.Adapter))
 			}
-		} else {
-			if reflect.TypeOf(params[1]).Kind() == reflect.String {
+		default:
+			switch params[1].(type) {
+			case string:
 				panic("Invalid parameters for enforcer.")
-			} else {
-				e.InitWithModelAndAdapter(params[0].(model.Model), params[1].(persist.Adapter))
+			default:
+				e.InitWithModelAndAdapter(p0.(model.Model), params[1].(persist.Adapter))
 			}
 		}
 	} else if len(params)-parsedParamLen == 1 {
-		if reflect.TypeOf(params[0]).Kind() == reflect.String {
-			e.InitWithFile(params[0].(string), "")
-		} else {
-			e.InitWithModelAndAdapter(params[0].(model.Model), nil)
+		switch p0 := params[0].(type) {
+		case string:
+			e.InitWithFile(p0, "")
+		default:
+			e.InitWithModelAndAdapter(p0.(model.Model), nil)
 		}
 	} else if len(params)-parsedParamLen == 0 {
 		e.InitWithFile("", "")
@@ -95,58 +99,57 @@ func NewEnforcer(params ...interface{}) *Enforcer {
 
 // InitWithFile initializes an enforcer with a model file and a policy file.
 func (e *Enforcer) InitWithFile(modelPath string, policyPath string) {
-	e.modelPath = modelPath
-
-	e.adapter = fileadapter.NewAdapter(policyPath)
-
-	e.enabled = true
-	e.autoSave = true
-
-	if e.modelPath != "" {
-		e.LoadModel()
-		e.LoadPolicy()
-	}
+	a := fileadapter.NewAdapter(policyPath)
+	e.InitWithAdapter(modelPath, a)
 }
 
 // InitWithAdapter initializes an enforcer with a database adapter.
 func (e *Enforcer) InitWithAdapter(modelPath string, adapter persist.Adapter) {
+	m := NewModel(modelPath, "")
+	e.InitWithModelAndAdapter(m, adapter)
+
 	e.modelPath = modelPath
-
-	e.adapter = adapter
-
-	e.enabled = true
-	e.autoSave = true
-
-	if e.modelPath != "" {
-		e.LoadModel()
-		e.LoadPolicy()
-	}
 }
 
 // InitWithModelAndAdapter initializes an enforcer with a model and a database adapter.
 func (e *Enforcer) InitWithModelAndAdapter(m model.Model, adapter persist.Adapter) {
-	e.modelPath = ""
 	e.adapter = adapter
 
 	e.model = m
 	e.model.PrintModel()
 	e.fm = model.LoadFunctionMap()
 
-	e.enabled = true
-	e.autoSave = true
+	e.initialize()
 
-	if e.adapter != nil {
+	// Do not initialize the full policy when using a filtered adapter
+	fa, ok := e.adapter.(persist.FilteredAdapter)
+	if e.adapter != nil && (!ok || ok && !fa.IsFiltered()) {
+		// error intentionally ignored
 		e.LoadPolicy()
 	}
 }
 
+func (e *Enforcer) initialize() {
+	e.rm = defaultrolemanager.NewRoleManager(10)
+	e.eft = effect.NewDefaultEffector()
+	e.watcher = nil
+
+	e.enabled = true
+	e.autoSave = true
+	e.autoBuildRoleLinks = true
+}
+
 // NewModel creates a model.
-func NewModel(params ...interface{}) model.Model {
+func NewModel(text ...string) model.Model {
 	m := make(model.Model)
 
-	if len(params) == 1 && reflect.TypeOf(params[0]).Kind() == reflect.String {
-		m.LoadModelFromText(params[0].(string))
-	} else if len(params) != 0 {
+	if len(text) == 2 {
+		if text[0] != "" {
+			m.LoadModel(text[0])
+		}
+	} else if len(text) == 1 {
+		m.LoadModelFromText(text[0])
+	} else if len(text) != 0 {
 		panic("Invalid parameters for model.")
 	}
 
@@ -168,8 +171,9 @@ func (e *Enforcer) GetModel() model.Model {
 }
 
 // SetModel sets the current model.
-func (e *Enforcer) SetModel(model model.Model) {
-	e.model = model
+func (e *Enforcer) SetModel(m model.Model) {
+	e.model = m
+	e.fm = model.LoadFunctionMap()
 }
 
 // GetAdapter gets the current adapter.
@@ -182,6 +186,23 @@ func (e *Enforcer) SetAdapter(adapter persist.Adapter) {
 	e.adapter = adapter
 }
 
+// SetWatcher sets the current watcher.
+func (e *Enforcer) SetWatcher(watcher persist.Watcher) {
+	e.watcher = watcher
+	// error intentionally ignored
+	watcher.SetUpdateCallback(func(string) { e.LoadPolicy() })
+}
+
+// SetRoleManager sets the current role manager.
+func (e *Enforcer) SetRoleManager(rm rbac.RoleManager) {
+	e.rm = rm
+}
+
+// SetEffector sets the current effector.
+func (e *Enforcer) SetEffector(eft effect.Effector) {
+	e.eft = eft
+}
+
 // ClearPolicy clears all policy.
 func (e *Enforcer) ClearPolicy() {
 	e.model.ClearPolicy()
@@ -190,19 +211,62 @@ func (e *Enforcer) ClearPolicy() {
 // LoadPolicy reloads the policy from file/database.
 func (e *Enforcer) LoadPolicy() error {
 	e.model.ClearPolicy()
-	err := e.adapter.LoadPolicy(e.model)
-	if err != nil {
+	if err := e.adapter.LoadPolicy(e.model); err != nil {
 		return err
 	}
 
 	e.model.PrintPolicy()
-	e.model.BuildRoleLinks()
+	if e.autoBuildRoleLinks {
+		e.BuildRoleLinks()
+	}
 	return nil
+}
+
+// LoadFilteredPolicy reloads a filtered policy from file/database.
+func (e *Enforcer) LoadFilteredPolicy(filter interface{}) error {
+	e.model.ClearPolicy()
+
+	var filteredAdapter persist.FilteredAdapter
+
+	// Attempt to cast the Adapter as a FilteredAdapter
+	switch adapter := e.adapter.(type) {
+	case persist.FilteredAdapter:
+		filteredAdapter = adapter
+	default:
+		return errors.New("filtered policies are not supported by this adapter")
+	}
+	if err := filteredAdapter.LoadFilteredPolicy(e.model, filter); err != nil {
+		return err
+	}
+
+	e.model.PrintPolicy()
+	if e.autoBuildRoleLinks {
+		e.BuildRoleLinks()
+	}
+	return nil
+}
+
+// IsFiltered returns true if the loaded policy has been filtered.
+func (e *Enforcer) IsFiltered() bool {
+	filteredAdapter, ok := e.adapter.(persist.FilteredAdapter)
+	if !ok {
+		return false
+	}
+	return filteredAdapter.IsFiltered()
 }
 
 // SavePolicy saves the current policy (usually after changed with Casbin API) back to file/database.
 func (e *Enforcer) SavePolicy() error {
-	return e.adapter.SavePolicy(e.model)
+	if e.IsFiltered() {
+		return errors.New("cannot save a filtered policy")
+	}
+	if err := e.adapter.SavePolicy(e.model); err != nil {
+		return err
+	}
+	if e.watcher != nil {
+		return e.watcher.Update()
+	}
+	return nil
 }
 
 // EnableEnforce changes the enforcing state of Casbin, when Casbin is disabled, all access will be allowed by the Enforce() function.
@@ -210,14 +274,26 @@ func (e *Enforcer) EnableEnforce(enable bool) {
 	e.enabled = enable
 }
 
-// EnableLog changes whether to print Casbin log to the standard output.
+// EnableLog changes whether Casbin will log messages to the Logger.
 func (e *Enforcer) EnableLog(enable bool) {
-	util.EnableLog = enable
+	log.GetLogger().EnableLog(enable)
 }
 
 // EnableAutoSave controls whether to save a policy rule automatically to the adapter when it is added or removed.
 func (e *Enforcer) EnableAutoSave(autoSave bool) {
 	e.autoSave = autoSave
+}
+
+// EnableAutoBuildRoleLinks controls whether to rebuild the role inheritance relations when a role is added or deleted.
+func (e *Enforcer) EnableAutoBuildRoleLinks(autoBuildRoleLinks bool) {
+	e.autoBuildRoleLinks = autoBuildRoleLinks
+}
+
+// BuildRoleLinks manually rebuild the role inheritance relations.
+func (e *Enforcer) BuildRoleLinks() {
+	// error intentionally ignored
+	e.rm.Clear()
+	e.model.BuildRoleLinks(e.rm)
 }
 
 // Enforce decides whether a "subject" can access a "object" with the operation "action", input parameters are usually: (sub, obj, act).
@@ -226,50 +302,31 @@ func (e *Enforcer) Enforce(rvals ...interface{}) bool {
 		return true
 	}
 
-	expString := e.model["m"]["m"].Value
-	var expression *govaluate.EvaluableExpression
-
 	functions := make(map[string]govaluate.ExpressionFunction)
-
 	for key, function := range e.fm {
 		functions[key] = function
 	}
-
-	_, ok := e.model["g"]
-	if ok {
+	if _, ok := e.model["g"]; ok {
 		for key, ast := range e.model["g"] {
 			rm := ast.RM
-			functions[key] = func(args ...interface{}) (interface{}, error) {
-				if rm == nil {
-					name1 := args[0].(string)
-					name2 := args[1].(string)
-
-					return name1 == name2, nil
-				}
-
-				if len(args) == 2 {
-					name1 := args[0].(string)
-					name2 := args[1].(string)
-
-					return (bool)(rm.HasLink(name1, name2)), nil
-				}
-
-				name1 := args[0].(string)
-				name2 := args[1].(string)
-				domain := args[2].(string)
-
-				return (bool)(rm.HasLink(name1, name2, domain)), nil
-			}
+			functions[key] = util.GenerateGFunction(rm)
 		}
 	}
-	expression, _ = govaluate.NewEvaluableExpressionWithFunctions(expString, functions)
 
-	var policyResults []Effect
-	if len(e.model["p"]["p"].Policy) != 0 {
-		policyResults = make([]Effect, len(e.model["p"]["p"].Policy))
+	expString := e.model["m"]["m"].Value
+	expression, err := govaluate.NewEvaluableExpressionWithFunctions(expString, functions)
+	if err != nil {
+		panic(err)
+	}
+
+	var policyEffects []effect.Effect
+	var matcherResults []float64
+	if policyLen := len(e.model["p"]["p"].Policy); policyLen != 0 {
+		policyEffects = make([]effect.Effect, policyLen)
+		matcherResults = make([]float64, policyLen)
 
 		for i, pvals := range e.model["p"]["p"].Policy {
-			// util.LogPrint("Policy Rule: ", pvals)
+			// log.LogPrint("Policy Rule: ", pvals)
 
 			parameters := make(map[string]interface{}, 8)
 			for j, token := range e.model["r"]["r"].Tokens {
@@ -280,35 +337,50 @@ func (e *Enforcer) Enforce(rvals ...interface{}) bool {
 			}
 
 			result, err := expression.Evaluate(parameters)
-			// util.LogPrint("Result: ", result)
+			// log.LogPrint("Result: ", result)
 
 			if err != nil {
-				policyResults[i] = EffectIndeterminate
+				policyEffects[i] = effect.Indeterminate
 				panic(err)
-			} else {
-				if !result.(bool) {
-					policyResults[i] = EffectIndeterminate
-				} else {
-					if effect, ok := parameters["p_eft"]; ok {
-						if effect == "allow" {
-							policyResults[i] = EffectAllow
-						} else if effect == "deny" {
-							policyResults[i] = EffectDeny
-						} else {
-							policyResults[i] = EffectIndeterminate
-						}
-					} else {
-						policyResults[i] = EffectAllow
-					}
-
-					if e.model["e"]["e"].Value == "priority(p_eft) || deny" {
-						break
-					}
-				}
 			}
+
+			switch result := result.(type) {
+			case bool:
+				if !result {
+					policyEffects[i] = effect.Indeterminate
+					continue
+				}
+			case float64:
+				if result == 0 {
+					policyEffects[i] = effect.Indeterminate
+					continue
+				} else {
+					matcherResults[i] = result
+				}
+			default:
+				panic(errors.New("matcher result should be bool, int or float"))
+			}
+
+			if eft, ok := parameters["p_eft"]; ok {
+				if eft == "allow" {
+					policyEffects[i] = effect.Allow
+				} else if eft == "deny" {
+					policyEffects[i] = effect.Deny
+				} else {
+					policyEffects[i] = effect.Indeterminate
+				}
+			} else {
+				policyEffects[i] = effect.Allow
+			}
+
+			if e.model["e"]["e"].Value == "priority(p_eft) || deny" {
+				break
+			}
+
 		}
 	} else {
-		policyResults = make([]Effect, 1)
+		policyEffects = make([]effect.Effect, 1)
+		matcherResults = make([]float64, 1)
 
 		parameters := make(map[string]interface{}, 8)
 		for j, token := range e.model["r"]["r"].Tokens {
@@ -319,73 +391,40 @@ func (e *Enforcer) Enforce(rvals ...interface{}) bool {
 		}
 
 		result, err := expression.Evaluate(parameters)
-		// util.LogPrint("Result: ", result)
+		// log.LogPrint("Result: ", result)
 
 		if err != nil {
-			policyResults[0] = EffectIndeterminate
+			policyEffects[0] = effect.Indeterminate
 			panic(err)
+		}
+
+		if result.(bool) {
+			policyEffects[0] = effect.Allow
 		} else {
-			if result.(bool) {
-				policyResults[0] = EffectAllow
+			policyEffects[0] = effect.Indeterminate
+		}
+	}
+
+	// log.LogPrint("Rule Results: ", policyEffects)
+
+	result, err := e.eft.MergeEffects(e.model["e"]["e"].Value, policyEffects, matcherResults)
+	if err != nil {
+		panic(err)
+	}
+
+	// Log request.
+	if log.GetLogger().IsEnabled() {
+		reqStr := "Request: "
+		for i, rval := range rvals {
+			if i != len(rvals)-1 {
+				reqStr += fmt.Sprintf("%v, ", rval)
 			} else {
-				policyResults[0] = EffectIndeterminate
+				reqStr += fmt.Sprintf("%v", rval)
 			}
 		}
+		reqStr += fmt.Sprintf(" ---> %t", result)
+		log.LogPrint(reqStr)
 	}
-
-	// util.LogPrint("Rule Results: ", policyResults)
-
-	result := false
-	if e.model["e"]["e"].Value == "some(where (p_eft == allow))" {
-		result = false
-		for _, eft := range policyResults {
-			if eft == EffectAllow {
-				result = true
-				break
-			}
-		}
-	} else if e.model["e"]["e"].Value == "!some(where (p_eft == deny))" {
-		result = true
-		for _, eft := range policyResults {
-			if eft == EffectDeny {
-				result = false
-				break
-			}
-		}
-	} else if e.model["e"]["e"].Value == "some(where (p_eft == allow)) && !some(where (p_eft == deny))" {
-		result = false
-		for _, eft := range policyResults {
-			if eft == EffectAllow {
-				result = true
-			} else if eft == EffectDeny {
-				result = false
-				break
-			}
-		}
-	} else if e.model["e"]["e"].Value == "priority(p_eft) || deny" {
-		result = false
-		for _, eft := range policyResults {
-			if eft != EffectIndeterminate {
-				if eft == EffectAllow {
-					result = true
-				} else {
-					result = false
-				}
-				break
-			}
-		}
-	}
-
-	reqStr := "Request: "
-	for i, rval := range rvals {
-		if i != len(rvals)-1 {
-			reqStr += fmt.Sprintf("%v, ", rval)
-		} else {
-			reqStr += fmt.Sprintf("%v", rval)
-		}
-	}
-	reqStr += fmt.Sprintf(" ---> %t", result)
-	util.LogPrint(reqStr)
 
 	return result
 }

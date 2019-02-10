@@ -50,7 +50,8 @@ func (a AuthPubTktImpl) VerifyFromRequest(req *http.Request) (*Ticket, error) {
 	}
 	ip := strings.Split(req.RemoteAddr, ":")[0]
 	if a.options.TKTCheckXForwardedIp {
-		ip = strings.Split(req.Header.Get("X-Forwarded-For"), ":")[0]
+		xffClient := strings.TrimSpace(strings.Split(req.Header.Get("X-Forwarded-For"), ",")[0])
+		ip = strings.Split(xffClient, ":")[0]
 	}
 	ticket, err := a.RequestToTicket(req)
 	if err != nil {
