@@ -80,7 +80,7 @@ func (Jwt) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http
 		EnableAuthOnOptions: options.EnableAuthOnOptions,
 		Debug:               log.GetLevel() == log.DebugLevel,
 	})
-	return NewJwtHandler(jwtMiddleware, handler, options.TrustCurrentUser), nil
+	return NewJwtHandler(jwtMiddleware, handler, options.TrustCurrentUser, options.NotVerifyExpire), nil
 }
 func (Jwt) Schema() interface{} {
 	return JwtConfig{}
@@ -90,10 +90,11 @@ type JwtHandler struct {
 	jwtMiddleware    *jwtmiddleware.JWTMiddleware
 	next             http.Handler
 	trustCurrentUser bool
+	notVerifyExpire  bool
 }
 
-func NewJwtHandler(jwtMiddleware *jwtmiddleware.JWTMiddleware, next http.Handler, trustCurrentUser bool) http.Handler {
-	return &JwtHandler{jwtMiddleware, next, trustCurrentUser}
+func NewJwtHandler(jwtMiddleware *jwtmiddleware.JWTMiddleware, next http.Handler, trustCurrentUser, notVerifyExpire bool) http.Handler {
+	return &JwtHandler{jwtMiddleware, next, trustCurrentUser, notVerifyExpire}
 }
 func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if h.trustCurrentUser && gobis.Username(req) != "" {
@@ -102,7 +103,12 @@ func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	err := h.jwtMiddleware.CheckJWT(w, req)
 	if err != nil {
-		return
+		if !h.notVerifyExpire {
+			return
+		}
+		if !strings.Contains(err.Error(), "used before issued") && !strings.Contains(err.Error(), "is not valid yet") {
+			return
+		}
 	}
 	jwtToken := req.Context().Value(h.jwtMiddleware.Options.UserProperty).(*jwt.Token)
 	mapClaims := jwtToken.Claims.(jwt.MapClaims)
@@ -135,11 +141,9 @@ func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.next.ServeHTTP(w, req)
 }
 func checkTokenfunc(token *jwt.Token, options *JwtOptions, signingMethod jwt.SigningMethod, notVerifyExpire bool) (interface{}, error) {
-	if !notVerifyExpire {
-		err := token.Claims.Valid()
-		if err != nil {
-			return nil, err
-		}
+	err := token.Claims.Valid()
+	if err != nil {
+		return nil, err
 	}
 	mapClaims := token.Claims.(jwt.MapClaims)
 	if !verifyAudience(mapClaims, options.Audience) {
