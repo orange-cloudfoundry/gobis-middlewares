@@ -141,9 +141,11 @@ func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.next.ServeHTTP(w, req)
 }
 func checkTokenfunc(token *jwt.Token, options *JwtOptions, signingMethod jwt.SigningMethod, notVerifyExpire bool) (interface{}, error) {
-	err := token.Claims.Valid()
-	if err != nil {
-		return nil, err
+	if !notVerifyExpire {
+		err := token.Claims.Valid()
+		if err != nil {
+			return nil, err
+		}
 	}
 	mapClaims := token.Claims.(jwt.MapClaims)
 	if !verifyAudience(mapClaims, options.Audience) {
