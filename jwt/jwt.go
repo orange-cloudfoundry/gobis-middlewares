@@ -34,6 +34,8 @@ type JwtOptions struct {
 	Issuer string `mapstructure:"issuer" json:"issuer" yaml:"issuer"`
 	// Add custom check to verify that the jwt contains those specified claims with specified value
 	CustomVerify map[string]string `mapstructure:"custom_verify" json:"custom_verify" yaml:"custom_verify"`
+	// Set to true to not verify expiration of token (Useful when you have different time between user and server)
+	NotVerifyExpire bool `mapstructure:"not_verify_expire" json:"not_verify_expire" yaml:"not_verify_expire"`
 	// Passthrough if a previous middleware already set user context
 	// This is helpful when you want add user with basic auth middleware
 	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
@@ -63,7 +65,7 @@ func (Jwt) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http
 	}
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return checkTokenfunc(token, options, signingMethod)
+			return checkTokenfunc(token, options, signingMethod, options.NotVerifyExpire)
 		},
 		SigningMethod: signingMethod,
 		ErrorHandler: func(w http.ResponseWriter, req *http.Request, err string) {
@@ -132,10 +134,12 @@ func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	h.next.ServeHTTP(w, req)
 }
-func checkTokenfunc(token *jwt.Token, options *JwtOptions, signingMethod jwt.SigningMethod) (interface{}, error) {
-	err := token.Claims.Valid()
-	if err != nil {
-		return nil, err
+func checkTokenfunc(token *jwt.Token, options *JwtOptions, signingMethod jwt.SigningMethod, notVerifyExpire bool) (interface{}, error) {
+	if !notVerifyExpire {
+		err := token.Claims.Valid()
+		if err != nil {
+			return nil, err
+		}
 	}
 	mapClaims := token.Claims.(jwt.MapClaims)
 	if !verifyAudience(mapClaims, options.Audience) {
