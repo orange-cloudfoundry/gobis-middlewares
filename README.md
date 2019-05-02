@@ -15,6 +15,7 @@ List:
 - [infopage](#infopage): Add an endpoint on upstream to see information like headers set by gobis and user informations set by middlewares (Useful for frontend)
 - [JWT](#jwt)
 - [oauth2](#oauth2)
+- [oauth2request](#oauth2request)
 - [ldap](#ldap)
 - [secure](#secure): An HTTP middleware for Go that facilitates some quick security wins
 - [rate limit](#rate-limit)
@@ -658,6 +659,62 @@ middleware_params:
 - Scopes will be loaded as groups and others middlewares will
  be able to find groups for the current user by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
 - Other middlewares can access to http client with oauth2 context by calling `oauth2.Oauth2Client(req)` where req is `*http.Request` variable
+
+### Credits
+
+- https://github.com/golang/oauth2
+
+## Oauth2request
+
+Retrieve a token with oauth2 client credentials and pass it to upstream
+
+See godoc for [Oauth2RequestOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/oauth2request#Oauth2RequestOptions) to know more about parameters.
+
+**THIS SHOULD BE USED CAREFULLY AS IT CAN BE A SECURITY ISSUE**
+
+### Use programmatically
+
+```go
+package main
+import "github.com/orange-cloudfoundry/gobis-middlewares/oauth2request"
+
+configHandler := gobis.DefaultHandlerConfig{
+        Routes: []gobis.ProxyRoute{
+            {
+                Name: "myapi",
+                Path: "/app/**",
+                Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
+                MiddlewareParams: oauth2request.Oauth2RequestConfig{
+                        Ldap: &oauth2request.Oauth2RequestOptions{
+                                Enabled: true,
+                                ClientId: "myclientid",
+                                ClientSecret: "myclientsecret",
+                                AccessTokenUri: "http://github.com/login/oauth/access_token",
+                                UseRouteTransport: true,
+                                InsecureSkipVerify: false,
+                                Scopes: []string{},
+                        },
+                },
+            },
+        },
+}
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(oauth2request.NewOauth2Request()))
+// create your server
+```
+
+### Use in config file
+
+```yaml
+middleware_params:
+  oauth2:
+    enabled: true
+    client_id: myclientid
+    client_secret: myclientsecret
+    access_token_uri: https://github.com/login/oauth/access_token
+    use_route_transport: true
+    insecure_skip_verify: false
+    scopes: []
+```
 
 ### Credits
 

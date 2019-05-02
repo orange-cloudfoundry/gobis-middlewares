@@ -10,6 +10,7 @@ import (
 type Oauth2Config struct {
 	Oauth2 *Oauth2Options `mapstructure:"oauth2" json:"oauth2" yaml:"oauth2"`
 }
+
 type Oauth2Options struct {
 	utils.ClientRouteOption `mapstructure:",squash"`
 	// enable oauth2 middleware
@@ -62,11 +63,13 @@ type Oauth2Options struct {
 	// This is helpful when you want add user with basic auth middleware
 	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
 }
+
 type Oauth2 struct{}
 
 func NewOauth2() *Oauth2 {
 	return &Oauth2{}
 }
+
 func (Oauth2) Handler(proxyRoute gobis.ProxyRoute, params interface{}, next http.Handler) (http.Handler, error) {
 	config := params.(Oauth2Config)
 	options := config.Oauth2
@@ -109,6 +112,7 @@ func (Oauth2) Handler(proxyRoute gobis.ProxyRoute, params interface{}, next http
 	)
 	return oauth2Handler, nil
 }
+
 func (Oauth2) Schema() interface{} {
 	return Oauth2Config{}
 }
