@@ -1,6 +1,7 @@
 module github.com/orange-cloudfoundry/gobis-middlewares
 
 require (
+	github.com/ArthurHlt/logrus-cef-formatter v1.0.0 // indirect
 	github.com/auth0/go-jwt-middleware v0.0.0-20170425171159-5493cabe49f7
 	github.com/casbin/casbin v1.8.1
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect

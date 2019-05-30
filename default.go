@@ -7,6 +7,7 @@ import (
 	"github.com/orange-cloudfoundry/gobis-middlewares/basicauth"
 	"github.com/orange-cloudfoundry/gobis-middlewares/casbin"
 	"github.com/orange-cloudfoundry/gobis-middlewares/cbreaker"
+	"github.com/orange-cloudfoundry/gobis-middlewares/ceftrace"
 	"github.com/orange-cloudfoundry/gobis-middlewares/cf_checkpermission"
 	"github.com/orange-cloudfoundry/gobis-middlewares/connlimit"
 	"github.com/orange-cloudfoundry/gobis-middlewares/cors"
@@ -40,6 +41,7 @@ func DefaultHandlers() []gobis.MiddlewareHandler {
 		connlimit.NewConnLimit(),
 		infopage.NewInfoPage(),
 		oauth2request.NewOauth2Request(),
+		ceftrace.NewCefTrace(),
 		trace.NewTrace(),
 	}
 }

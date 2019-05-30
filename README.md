@@ -8,6 +8,7 @@ List:
 - [basic2token](#basic2token): Give the ability to connect an user over basic auth, retrieve a token from an oauth2 server with user information and forward the request with this token.
 - [basic auth](#basic-auth)
 - [casbin](#casbin): An authorization library that supports access control models like ACL, RBAC, ABAC
+- [cef trace](#cef-trace): Produce access log in CEF format for siem.
 - [cf check permission](#cf-check-permission): Check if user has access to a service instance on a cloud foundry platform.
 - [circuit breaker](#circuit-breaker)
 - [conn limit](#conn-limit)
@@ -241,6 +242,54 @@ this allow you, if you use ldap middleware, to pass a group name found as a `sub
 ### Credits
 
 - https://github.com/casbin/casbin
+
+## CEF Trace
+
+Produce access log in CEF format for siem.
+
+See godoc for [CefTraceOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/ceftrace#CefTraceOptions) to know more about parameters.
+
+Trace will take the form:
+`CEF:0|device_vendor|device_product|device_version|my-sig|my message|0|rt=<unix timestamp> request=/path/request requestMethod=GET httpStatusCode=200 src=10.0.0.1 suser=user-gobis sgroups=group,gobis xForwardedFor=10.0.0.2 GET /path/request`
+
+### Use programmatically
+
+```go
+import "github.com/orange-cloudfoundry/gobis-middlewares/ceftrace"
+
+configHandler := gobis.DefaultHandlerConfig{
+        Routes: []gobis.ProxyRoute{
+            {
+                Name: "myapi",
+                Path: "/app/**",
+                Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
+                MiddlewareParams: cf_checkpermission.CfCheckPermissionConfig{
+                        CefTrace: &ceftrace.CefTraceOptions{
+                                Enabled: true,
+                                DeviceVendor: "device_vendor",
+                                DeviceProduct: "device_product",
+                                DeviceVersion: "device_version",
+                                KeySignatureID: "my-sig",
+                        },
+                },
+            },
+        },
+}
+gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(ceftrace.NewCefTrace()))
+// create your server
+```
+
+### Use in config file
+
+```yaml
+middleware_params:
+  cef_trace:
+    enabled: true
+    device_vendor: device_vendor
+    device_product: device_product
+    device_version: device_version
+    key_signature_id: my-sig
+```
 
 ## Cf check permission
 
