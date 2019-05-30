@@ -250,7 +250,7 @@ Produce access log in CEF format for siem.
 See godoc for [CefTraceOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/ceftrace#CefTraceOptions) to know more about parameters.
 
 Trace will take the form:
-`CEF:0|device_vendor|device_product|device_version|my-sig|my message|0|rt=<unix timestamp> request=/path/request requestMethod=GET httpStatusCode=200 src=10.0.0.1 suser=user-gobis sgroups=group,gobis xForwardedFor=10.0.0.2 GET /path/request`
+`CEF:0|device_vendor|device_product|device_version|my-sig|GET /path/request|0|rt=<unix timestamp> request=/path/request requestMethod=GET httpStatusCode=200 src=10.0.0.1 suser=user-gobis sgroups=group,gobis xForwardedFor=10.0.0.2`
 
 ### Use programmatically
 
