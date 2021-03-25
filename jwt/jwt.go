@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
+	f3jwt "github.com/form3tech-oss/jwt-go"
 	"github.com/orange-cloudfoundry/gobis"
 	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
 	log "github.com/sirupsen/logrus"
@@ -64,7 +65,7 @@ func (Jwt) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http
 		return handler, fmt.Errorf("algorithm '%s' doesn't exists.", options.Alg)
 	}
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+		ValidationKeyGetter: func(token *f3jwt.Token) (interface{}, error) {
 			return checkTokenfunc(token, options, signingMethod, options.NotVerifyIssuedAt)
 		},
 		SigningMethod: signingMethod,
@@ -135,7 +136,7 @@ func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	h.next.ServeHTTP(w, req)
 }
-func checkTokenfunc(token *jwt.Token, options *JwtOptions, signingMethod jwt.SigningMethod, notVerifyIssuedAt bool) (interface{}, error) {
+func checkTokenfunc(token *f3jwt.Token, options *JwtOptions, signingMethod jwt.SigningMethod, notVerifyIssuedAt bool) (interface{}, error) {
 	mapClaims := token.Claims.(jwt.MapClaims)
 	if notVerifyIssuedAt {
 		mapClaims["iat"] = ""
