@@ -106,8 +106,8 @@ func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		return
 	}
-	jwtToken := req.Context().Value(h.jwtMiddleware.Options.UserProperty).(*jwt.Token)
-	mapClaims := jwtToken.Claims.(jwt.MapClaims)
+	jwtToken := req.Context().Value(h.jwtMiddleware.Options.UserProperty).(*f3jwt.Token)
+	mapClaims := jwtToken.Claims.(f3jwt.MapClaims)
 	usrRegex := regexp.MustCompile("(?i)^(user|username|user_name)$")
 	scopeRegex := regexp.MustCompile("(?i)^scope.*")
 	for k, v := range mapClaims {
@@ -137,7 +137,7 @@ func (h JwtHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.next.ServeHTTP(w, req)
 }
 func checkTokenfunc(token *f3jwt.Token, options *JwtOptions, signingMethod jwt.SigningMethod, notVerifyIssuedAt bool) (interface{}, error) {
-	mapClaims := token.Claims.(jwt.MapClaims)
+	mapClaims := token.Claims.(f3jwt.MapClaims)
 	if notVerifyIssuedAt {
 		mapClaims["iat"] = ""
 	}
@@ -159,7 +159,7 @@ func checkTokenfunc(token *f3jwt.Token, options *JwtOptions, signingMethod jwt.S
 	}
 	return getSecretEncoded(options.Secret, signingMethod)
 }
-func verifyAudience(m jwt.MapClaims, audience string) bool {
+func verifyAudience(m f3jwt.MapClaims, audience string) bool {
 	if audience == "" {
 		return true
 	}
