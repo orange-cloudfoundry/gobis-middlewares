@@ -19,7 +19,7 @@ require (
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/mailgun/timetools v0.0.0-20170619190023-f3a7b8ffff47 // indirect
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.16.0
+	github.com/onsi/gomega v1.17.0
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.0.3
 	github.com/orange-cloudfoundry/gobis v1.5.1
 	github.com/rs/cors v1.8.0
@@ -40,6 +40,7 @@ require (
 
 require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
+	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
@@ -48,9 +49,13 @@ require (
 	github.com/mailgun/multibuf v0.0.0-20150714184110-565402cd71fb // indirect
 	github.com/mailgun/ttlmap v0.0.0-20170619185759-c1c17f74874f // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
+	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/thoas/go-funk v0.9.1 // indirect
 	github.com/vulcand/predicate v1.1.0 // indirect
+	golang.org/x/text v0.3.6 // indirect
+	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 // mess with jwt libraries
