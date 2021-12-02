@@ -21,7 +21,7 @@ require (
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.0.3
-	github.com/orange-cloudfoundry/gobis v1.6.0
+	github.com/orange-cloudfoundry/gobis v1.6.1
 	github.com/rs/cors v1.8.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/unrolled/secure v1.0.9
@@ -48,7 +48,7 @@ require (
 	github.com/mailgun/minheap v0.0.0-20170619185613-3dbe6c6bf55f // indirect
 	github.com/mailgun/multibuf v0.0.0-20150714184110-565402cd71fb // indirect
 	github.com/mailgun/ttlmap v0.0.0-20170619185759-c1c17f74874f // indirect
-	github.com/mitchellh/mapstructure v1.4.2 // indirect
+	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/thoas/go-funk v0.9.1 // indirect
