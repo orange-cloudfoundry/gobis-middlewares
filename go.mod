@@ -19,9 +19,9 @@ require (
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/mailgun/timetools v0.0.0-20170619190023-f3a7b8ffff47 // indirect
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.18.0
+	github.com/onsi/gomega v1.18.1
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.0.3
-	github.com/orange-cloudfoundry/gobis v1.7.0
+	github.com/orange-cloudfoundry/gobis v1.7.1
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.8.1
 	github.com/unrolled/secure v1.0.9
