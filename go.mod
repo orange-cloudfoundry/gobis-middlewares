@@ -24,7 +24,7 @@ require (
 	github.com/orange-cloudfoundry/gobis v1.7.1
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.8.1
-	github.com/unrolled/secure v1.0.9
+	github.com/unrolled/secure v1.10.0
 	github.com/vulcand/oxy v1.3.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
