@@ -6,10 +6,9 @@ replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram
 
 require (
 	github.com/ArthurHlt/logrus-cef-formatter v1.0.0
-	github.com/HdrHistogram/hdrhistogram-go v1.1.0 // indirect
+	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/casbin/casbin v1.9.1
-	github.com/codahale/hdrhistogram v1.1.2 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
@@ -17,17 +16,16 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/gravitational/trace v1.1.18 // indirect
 	github.com/jonboulle/clockwork v0.2.3 // indirect
-	github.com/mailgun/timetools v0.0.0-20170619190023-f3a7b8ffff47 // indirect
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.19.0
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.0.3
-	github.com/orange-cloudfoundry/gobis v1.10.0
+	github.com/orange-cloudfoundry/gobis v1.11.0
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.8.1
 	github.com/unrolled/secure v1.10.0
-	github.com/vulcand/oxy v1.3.0
-	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
-	golang.org/x/net v0.0.0-20220412020605-290c469a71a5 // indirect
+	github.com/vulcand/oxy v1.4.0
+	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f
+	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4 // indirect
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	golang.org/x/sys v0.0.0-20220412071739-889880a91fd5 // indirect
 	golang.org/x/term v0.0.0-20220411215600-e5f449aeb171 // indirect
@@ -35,7 +33,6 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 )
 
 require (
@@ -45,9 +42,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/mailgun/minheap v0.0.0-20170619185613-3dbe6c6bf55f // indirect
 	github.com/mailgun/multibuf v0.0.0-20150714184110-565402cd71fb // indirect
-	github.com/mailgun/ttlmap v0.0.0-20170619185759-c1c17f74874f // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
