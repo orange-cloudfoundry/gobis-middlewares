@@ -233,8 +233,8 @@ github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.1 h1:5TQK59W5E3v0r2duFAb7P95B6hEeOyEnHRa8MjYSMTY=
 github.com/thoas/go-funk v0.9.2 h1:oKlNYv0AY5nyf9g+/GhMgS/UO2ces0QRdPKwkhY3VCk=
 github.com/thoas/go-funk v0.9.2/go.mod h1:+IWnUfUmFO1+WVYQWQtIJHeRRdaIyyYglZN7xzUPe4Q=
-github.com/unrolled/secure v1.11.0 h1:fjkKhD/MsQnlmz/au+MmFptCFNhvf5iv04ALkdCXRCI=
-github.com/unrolled/secure v1.11.0/go.mod h1:BmF5hyM6tXczk3MpQkFf1hpKSRqCyhqcbiQtiAF7+40=
+github.com/unrolled/secure v1.12.0 h1:7k3jcgLwfjiKkhQde6VbQ3D4KDLtDBqDd/hs3PPANDY=
+github.com/unrolled/secure v1.12.0/go.mod h1:BmF5hyM6tXczk3MpQkFf1hpKSRqCyhqcbiQtiAF7+40=
 github.com/urfave/negroni v1.0.0 h1:kIimOitoypq34K7TG7DUaJ9kq/N4Ofuwi1sjz0KipXc=
 github.com/urfave/negroni v1.0.0/go.mod h1:Meg73S6kFm/4PpbYdq35yYWoCZ9mS/YSx+lKnmiohz4=
 github.com/vulcand/oxy v1.4.1 h1:8FUsbr5xhSJqNlSrpUBcw93WuZIEI9JUyvThB9YqqF8=
