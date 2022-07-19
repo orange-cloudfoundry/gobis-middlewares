@@ -21,13 +21,13 @@ require (
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.0.4
 	github.com/orange-cloudfoundry/gobis v1.11.2
 	github.com/rs/cors v1.8.2
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.0
 	github.com/unrolled/secure v1.12.0
 	github.com/vulcand/oxy v1.4.1
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
 	golang.org/x/oauth2 v0.0.0-20220628200809-02e64fa58f26
-	golang.org/x/sys v0.0.0-20220627191245-f75cf1eec38b // indirect
+	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
