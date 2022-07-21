@@ -17,7 +17,7 @@ require (
 	github.com/gravitational/trace v1.1.19 // indirect
 	github.com/jonboulle/clockwork v0.3.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.19.0
+	github.com/onsi/gomega v1.20.0
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.0.4
 	github.com/orange-cloudfoundry/gobis v1.12.0
 	github.com/rs/cors v1.8.2
@@ -40,6 +40,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/mailgun/multibuf v0.1.2 // indirect
@@ -50,7 +51,7 @@ require (
 	github.com/vulcand/predicate v1.2.0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 // mess with jwt libraries
