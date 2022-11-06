@@ -84,7 +84,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: basic2token.Basic2TokenConfig{
-                        Ldap: &basic2token.Basic2TokenOptions{
+                        Basic2Token: &basic2token.Basic2TokenOptions{
                                 Enable: true,
                                 AccessTokenUri: "https://my.uaa.local/oauth/token",
                                 ClientId: "cf",
@@ -539,7 +539,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: jwt.JwtConfig{
-                        Ldap: &jwt.JwtOptions{
+                        Jwt: &jwt.JwtOptions{
                                 Enabled: true,
                                 Alg: "RS256", // this is mandatory due to security issue: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries
                                 Secret: "hmac secret or ECDSA/RSA public key", 
@@ -659,7 +659,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: oauth2.Oauth2Config{
-                        Ldap: &oauth2.Oauth2Options{
+                        Oauth2: &oauth2.Oauth2Options{
                                 Enabled: true,
                                 ClientId: "myclientid",
                                 ClientSecret: "myclientsecret",
@@ -734,7 +734,7 @@ configHandler := gobis.DefaultHandlerConfig{
                 Path: "/app/**",
                 Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
                 MiddlewareParams: oauth2request.Oauth2RequestConfig{
-                        Ldap: &oauth2request.Oauth2RequestOptions{
+                        Oauth2Request: &oauth2request.Oauth2RequestOptions{
                                 Enabled: true,
                                 ClientId: "myclientid",
                                 ClientSecret: "myclientsecret",
