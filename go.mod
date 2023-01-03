@@ -14,19 +14,19 @@ require (
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/sessions v1.2.1
-	github.com/gravitational/trace v1.1.19 // indirect
+	github.com/gravitational/trace v1.2.0 // indirect
 	github.com/jonboulle/clockwork v0.3.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.24.2
-	github.com/orange-cloudfoundry/go-auth-pubtkt v1.0.4
-	github.com/orange-cloudfoundry/gobis v1.18.4
+	github.com/orange-cloudfoundry/go-auth-pubtkt v1.1.0
+	github.com/orange-cloudfoundry/gobis v1.19.0
 	github.com/rs/cors v1.8.3
 	github.com/sirupsen/logrus v1.9.0
 	github.com/unrolled/secure v1.13.0
 	github.com/vulcand/oxy v1.4.2
-	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0
+	golang.org/x/crypto v0.4.0
 	golang.org/x/net v0.4.0 // indirect
-	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
+	golang.org/x/oauth2 v0.3.0
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/term v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
@@ -37,7 +37,7 @@ require (
 
 require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
-	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
