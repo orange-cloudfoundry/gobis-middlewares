@@ -17,7 +17,7 @@ require (
 	github.com/gravitational/trace v1.2.0 // indirect
 	github.com/jonboulle/clockwork v0.3.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.27.2
+	github.com/onsi/gomega v1.27.3
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.1.0
 	github.com/orange-cloudfoundry/gobis v1.22.2
 	github.com/rs/cors v1.8.3
@@ -39,7 +39,7 @@ require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
