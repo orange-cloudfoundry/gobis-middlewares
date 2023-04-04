@@ -1,6 +1,6 @@
 module github.com/orange-cloudfoundry/gobis-middlewares
 
-go 1.19
+go 1.20
 
 replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram-go v0.0.0-20210305173142-35c7773a578a
 
@@ -14,23 +14,23 @@ require (
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/sessions v1.2.1
-	github.com/gravitational/trace v1.2.0 // indirect
-	github.com/jonboulle/clockwork v0.3.0 // indirect
+	github.com/gravitational/trace v1.2.1 // indirect
+	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.27.6
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.1.0
-	github.com/orange-cloudfoundry/gobis v1.22.6
+	github.com/orange-cloudfoundry/gobis v1.23.0
 	github.com/rs/cors v1.8.3
 	github.com/sirupsen/logrus v1.9.0
 	github.com/unrolled/secure v1.13.0
 	github.com/vulcand/oxy v1.4.2
-	golang.org/x/crypto v0.4.0
+	golang.org/x/crypto v0.7.0
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.6.0
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/term v0.6.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1
 )
@@ -43,7 +43,7 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/mailgun/multibuf v0.1.2 // indirect
+	github.com/mailgun/multibuf v0.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
