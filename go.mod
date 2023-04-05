@@ -18,7 +18,7 @@ require (
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.27.6
-	github.com/orange-cloudfoundry/go-auth-pubtkt v1.1.0
+	github.com/orange-cloudfoundry/go-auth-pubtkt v1.2.0
 	github.com/orange-cloudfoundry/gobis v1.23.0
 	github.com/rs/cors v1.8.3
 	github.com/sirupsen/logrus v1.9.0
