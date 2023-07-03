@@ -18,7 +18,7 @@ require (
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.27.8
-	github.com/orange-cloudfoundry/go-auth-pubtkt v1.2.0
+	github.com/orange-cloudfoundry/go-auth-pubtkt v1.2.1
 	github.com/orange-cloudfoundry/gobis v1.23.5
 	github.com/rs/cors v1.9.0
 	github.com/sirupsen/logrus v1.9.3
@@ -30,7 +30,7 @@ require (
 	golang.org/x/sys v0.9.0 // indirect
 	golang.org/x/term v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.30.0 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1
 )
