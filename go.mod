@@ -20,7 +20,7 @@ require (
 	github.com/onsi/gomega v1.27.10
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.2.1
 	github.com/orange-cloudfoundry/gobis v1.23.8
-	github.com/rs/cors v1.9.0
+	github.com/rs/cors v1.10.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unrolled/secure v1.13.0
 	github.com/vulcand/oxy v1.4.2
