@@ -4,9 +4,9 @@ import (
 	"github.com/casbin/casbin"
 	"github.com/casbin/casbin/persist"
 	"github.com/orange-cloudfoundry/gobis"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
-	log "github.com/sirupsen/logrus"
 )
 
 type CasbinHandler struct {
@@ -30,8 +30,6 @@ func (h CasbinHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	h.next.ServeHTTP(w, req)
 }
-
-
 
 // CheckPermission checks the user/method/path combination from the request.
 // Returns true (permission granted) or false (permission forbidden)

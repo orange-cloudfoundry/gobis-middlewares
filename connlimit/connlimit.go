@@ -2,9 +2,9 @@ package connlimit
 
 import (
 	"github.com/orange-cloudfoundry/gobis"
-	"net/http"
-	"github.com/vulcand/oxy/connlimit"
 	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
+	"github.com/vulcand/oxy/connlimit"
+	"net/http"
 )
 
 type ConnLimitConfig struct {
@@ -12,9 +12,9 @@ type ConnLimitConfig struct {
 }
 type ConnLimitOptions struct {
 	// enable conn limit middleware
-	Enabled          bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	// Limit number of simultaneous connection (default to 20)
-	Limit            int64 `mapstructure:"limit" json:"limit" yaml:"limit"`
+	Limit int64 `mapstructure:"limit" json:"limit" yaml:"limit"`
 	// Identify request source to limit the source
 	// possible value are 'client.ip', 'request.host' or 'request.header.X-My-Header-Name'
 	// (default: client.ip)

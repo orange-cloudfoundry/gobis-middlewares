@@ -1,10 +1,10 @@
 package casbin
 
 import (
-	"github.com/casbin/casbin/model"
-	"net/http"
-	"github.com/orange-cloudfoundry/gobis"
 	"errors"
+	"github.com/casbin/casbin/model"
+	"github.com/orange-cloudfoundry/gobis"
+	"net/http"
 )
 
 type GobisAdapter struct {
@@ -49,8 +49,8 @@ func (a *GobisAdapter) AddPoliciesFromRequest(req *http.Request) {
 	for _, group := range groups {
 		a.AddPolicies(CasbinPolicy{
 			Type: "g",
-			Sub: user,
-			Obj: group,
+			Sub:  user,
+			Obj:  group,
 		})
 	}
 	var ctxPolicies *[]CasbinPolicy

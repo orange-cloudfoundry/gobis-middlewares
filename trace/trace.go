@@ -2,8 +2,8 @@ package trace
 
 import (
 	"github.com/orange-cloudfoundry/gobis"
-	"net/http"
 	"github.com/vulcand/oxy/trace"
+	"net/http"
 	"os"
 )
 
@@ -12,9 +12,9 @@ type TraceConfig struct {
 }
 type TraceOptions struct {
 	// enable request and response capture
-	Enabled         bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
+	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	// add request headers to capture
-	RequestHeaders  []string `mapstructure:"request_headers" json:"request_headers" yaml:"request_headers"`
+	RequestHeaders []string `mapstructure:"request_headers" json:"request_headers" yaml:"request_headers"`
 	// add response headers to capture
 	ResponseHeaders []string `mapstructure:"response_headers" json:"response_headers" yaml:"response_headers"`
 }

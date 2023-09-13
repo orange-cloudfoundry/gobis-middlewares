@@ -1,17 +1,17 @@
 package utils
 
 import (
-	"reflect"
 	"fmt"
+	"reflect"
 )
 
-func RequiredVal(elems...interface{}) error {
-	if len(elems) % 2 == 1 {
+func RequiredVal(elems ...interface{}) error {
+	if len(elems)%2 == 1 {
 		panic("Parameters are not in pairs")
 	}
 	var data interface{}
 	for i, elem := range elems {
-		if (i + 1) % 2 == 1 {
+		if (i+1)%2 == 1 {
 			data = elem
 			continue
 		}
