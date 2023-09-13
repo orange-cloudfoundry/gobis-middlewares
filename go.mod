@@ -1,6 +1,6 @@
 module github.com/orange-cloudfoundry/gobis-middlewares
 
-go 1.20
+go 1.21
 
 replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram-go v0.0.0-20210305173142-35c7773a578a
 
