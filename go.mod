@@ -14,11 +14,11 @@ require (
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/sessions v1.2.1
-	github.com/gravitational/trace v1.2.1 // indirect
+	github.com/gravitational/trace v1.3.1 // indirect
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.27.10
-	github.com/orange-cloudfoundry/go-auth-pubtkt v1.2.1
+	github.com/orange-cloudfoundry/go-auth-pubtkt v1.3.0
 	github.com/orange-cloudfoundry/gobis v1.23.8
 	github.com/rs/cors v1.10.0
 	github.com/sirupsen/logrus v1.9.3
@@ -29,7 +29,7 @@ require (
 	golang.org/x/oauth2 v0.12.0
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/term v0.12.0 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1
