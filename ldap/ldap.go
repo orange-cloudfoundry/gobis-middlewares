@@ -60,7 +60,7 @@ func (l LdapAuth) CreateConn() (conn *ldap.Conn, err error) {
 	if l.UseSsl {
 		conn, err = ldap.DialTLS("tcp", l.Address, &tls.Config{InsecureSkipVerify: l.InsecureSkipVerify})
 	} else {
-		conn, err = ldap.Dial("tcp", l.Address, )
+		conn, err = ldap.Dial("tcp", l.Address)
 	}
 	if err != nil {
 		return

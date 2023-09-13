@@ -1,9 +1,9 @@
 package utils
 
 import (
+	"github.com/orange-cloudfoundry/gobis"
 	"github.com/vulcand/oxy/utils"
 	"net/http"
-	"github.com/orange-cloudfoundry/gobis"
 )
 
 type GobisSourceExtractor struct {
