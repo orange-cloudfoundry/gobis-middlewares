@@ -8,7 +8,7 @@ import (
 	"github.com/orange-cloudfoundry/gobis"
 	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
 	"golang.org/x/oauth2"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -253,10 +253,10 @@ func (h Oauth2Handler) retrieveUserInfo(req *http.Request, c *http.Client) {
 		panic(err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		b, _ := ioutil.ReadAll(resp.Body)
+		b, _ := io.ReadAll(resp.Body)
 		panic(fmt.Sprintf("Error when retrieving user information %d: %s", resp.StatusCode, string(b)))
 	}
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		panic(fmt.Sprintf("Error when retrieving user information: %s", err.Error()))
 	}
