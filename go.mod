@@ -19,7 +19,7 @@ require (
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.29.0
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.6.0
-	github.com/orange-cloudfoundry/gobis v1.27.0
+	github.com/orange-cloudfoundry/gobis v1.27.1
 	github.com/rs/cors v1.10.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unrolled/secure v1.13.0
