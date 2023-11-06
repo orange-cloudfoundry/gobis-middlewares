@@ -12,14 +12,14 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
-	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/sessions v1.2.2
 	github.com/gravitational/trace v1.3.1 // indirect
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.29.0
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.7.0
-	github.com/orange-cloudfoundry/gobis v1.28.0
+	github.com/orange-cloudfoundry/gobis v1.28.1
 	github.com/rs/cors v1.10.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unrolled/secure v1.13.0
