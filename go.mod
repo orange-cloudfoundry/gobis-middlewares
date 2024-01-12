@@ -18,7 +18,7 @@ require (
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.30.0
-	github.com/orange-cloudfoundry/go-auth-pubtkt v1.8.0
+	github.com/orange-cloudfoundry/go-auth-pubtkt v1.8.1
 	github.com/orange-cloudfoundry/gobis v1.29.0
 	github.com/rs/cors v1.10.1
 	github.com/sirupsen/logrus v1.9.3
@@ -37,7 +37,7 @@ require (
 
 require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
@@ -45,7 +45,7 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/mailgun/multibuf v0.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nxadm/tail v1.4.8 // indirect
+	github.com/nxadm/tail v1.4.11 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/thoas/go-funk v0.9.3 // indirect
 	github.com/vulcand/predicate v1.2.0 // indirect
