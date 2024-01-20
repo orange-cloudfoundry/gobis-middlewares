@@ -71,7 +71,6 @@ func (o SecureOptions) ToSecureOptions() secure.Options {
 		BrowserXssFilter:        o.BrowserXssFilter,
 		CustomBrowserXssValue:   o.CustomBrowserXssValue,
 		ContentSecurityPolicy:   o.ContentSecurityPolicy,
-		PublicKey:               o.PublicKey,
 		ReferrerPolicy:          o.ReferrerPolicy,
 		IsDevelopment:           o.IsDevelopment,
 	}

@@ -22,7 +22,7 @@ require (
 	github.com/orange-cloudfoundry/gobis v1.29.1
 	github.com/rs/cors v1.10.1
 	github.com/sirupsen/logrus v1.9.3
-	github.com/unrolled/secure v1.13.0
+	github.com/unrolled/secure v1.14.0
 	github.com/vulcand/oxy v1.4.2
 	golang.org/x/crypto v0.18.0
 	golang.org/x/net v0.20.0 // indirect
@@ -30,7 +30,7 @@ require (
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/term v0.16.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1
 )
