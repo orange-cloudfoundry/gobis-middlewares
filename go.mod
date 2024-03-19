@@ -17,7 +17,7 @@ require (
 	github.com/gravitational/trace v1.3.1 // indirect
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.31.1
+	github.com/onsi/gomega v1.32.0
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.9.0
 	github.com/orange-cloudfoundry/gobis v1.30.0
 	github.com/rs/cors v1.10.1
