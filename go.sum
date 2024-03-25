@@ -138,8 +138,8 @@ github.com/onsi/gomega v1.7.1/go.mod h1:XdKZgCCFLUoM/7CFJVPcG8C1xQ1AJ0vpAezJrB7J
 github.com/onsi/gomega v1.10.1/go.mod h1:iN09h71vgCQne3DLsj+A5owkum+a2tYe+TOCB1ybHNo=
 github.com/onsi/gomega v1.32.0 h1:JRYU78fJ1LPxlckP6Txi/EYqJvjtMrDC04/MM5XRHPk=
 github.com/onsi/gomega v1.32.0/go.mod h1:a4x4gW6Pz2yK1MAmvluYme5lvYTn61afQ2ETw/8n4Lg=
-github.com/orange-cloudfoundry/go-auth-pubtkt v1.9.0 h1:6NvFZ4f5dWT+36OQnaLRyPkvC7qivk07efoEy2kyw6c=
-github.com/orange-cloudfoundry/go-auth-pubtkt v1.9.0/go.mod h1:ReSzFA7G/LjbZi4C9/AB9mp4M8L4vJuHYEylDHFoBaI=
+github.com/orange-cloudfoundry/go-auth-pubtkt v1.10.0 h1:BCoua1TjZSMIs5RtgHQL8Y0IJLtiVwRXixzyI9i2AtA=
+github.com/orange-cloudfoundry/go-auth-pubtkt v1.10.0/go.mod h1:VmwDItsF2ZwmkLDDXMaN9eeOwOovO9p+YXEj0f9bCFo=
 github.com/orange-cloudfoundry/gobis v1.31.0 h1:AyvHsyOox5keZjsbqYVPMddJjTu/1gy1SZ2+claCNXI=
 github.com/orange-cloudfoundry/gobis v1.31.0/go.mod h1:u1KmXDkxm/Qykz7Ypxix7REyKNZQkyVZcYgmdWMfjrY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
