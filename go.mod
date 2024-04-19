@@ -24,11 +24,11 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/unrolled/secure v1.13.0
 	github.com/vulcand/oxy v1.4.2
-	golang.org/x/crypto v0.21.0
+	golang.org/x/crypto v0.22.0
 	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/oauth2 v0.19.0
-	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/term v0.18.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/term v0.19.0 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1
 )
