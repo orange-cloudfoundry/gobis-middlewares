@@ -17,7 +17,7 @@ require (
 	github.com/gravitational/trace v1.3.1 // indirect
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.32.0
+	github.com/onsi/gomega v1.33.0
 	github.com/orange-cloudfoundry/go-auth-pubtkt v1.10.0
 	github.com/orange-cloudfoundry/gobis v1.31.0
 	github.com/rs/cors v1.10.1
@@ -25,7 +25,7 @@ require (
 	github.com/unrolled/secure v1.13.0
 	github.com/vulcand/oxy v1.4.2
 	golang.org/x/crypto v0.21.0
-	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/oauth2 v0.19.0
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/term v0.18.0 // indirect
