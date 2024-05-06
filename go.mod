@@ -26,7 +26,7 @@ require (
 	github.com/vulcand/oxy v1.4.2
 	golang.org/x/crypto v0.22.0
 	golang.org/x/net v0.24.0 // indirect
-	golang.org/x/oauth2 v0.19.0
+	golang.org/x/oauth2 v0.20.0
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/term v0.19.0 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
