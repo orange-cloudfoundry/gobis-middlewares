@@ -559,7 +559,7 @@ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFacto
 ### Credits
 
 - https://github.com/auth0/go-jwt-middleware
-- https://github.com/dgrijalva/jwt-go
+- https://github.com/golang-jwt/jwt
 
 ### Use in config file
 
