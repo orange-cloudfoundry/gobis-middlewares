@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/orange-cloudfoundry/gobis-middlewares/oauth2"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -41,7 +41,7 @@ func (h CfCheckPermissionHandler) ServeHTTP(w http.ResponseWriter, req *http.Req
 		return
 	}
 	defer resp.Body.Close()
-	b, _ := ioutil.ReadAll(resp.Body)
+	b, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
 		panic(fmt.Sprintf("orange-cloudfoundry/gobis/middlewares: error when requesting cf check permission: %s", string(b)))
 		return

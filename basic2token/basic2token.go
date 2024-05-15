@@ -8,7 +8,6 @@ import (
 	"github.com/orange-cloudfoundry/gobis"
 	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -79,11 +78,11 @@ func (a Basic2TokenAuth) Auth(user, password string, origRequest *http.Request) 
 		if resp.StatusCode == 401 || resp.StatusCode == 403 {
 			return false
 		}
-		b, _ := ioutil.ReadAll(resp.Body)
+		b, _ := io.ReadAll(resp.Body)
 		panic(fmt.Sprintf("Error from oauth server %d: %s", resp.StatusCode, string(b)))
 		return false
 	}
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		panic(fmt.Sprintf("Error when getting token for %s: %s", user, err.Error()))
 		return false
