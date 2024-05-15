@@ -1,11 +1,11 @@
 # Gobis-middlewares [![GoDoc](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares?status.svg)](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares)
 
-This is a set of middlewares created for [gobis](https://github.com/orange-cloudfoundry/gobis) useable on your on project containing gobis.
+This is a set of middlewares created for [gobis](https://github.com/orange-cloudfoundry/gobis) usable on your on project containing gobis.
 
 **Note**: They are loaded by default on [gobis-server](https://github.com/orange-cloudfoundry/gobis-server)
 
 List:
-- [basic2token](#basic2token): Give the ability to connect an user over basic auth, retrieve a token from an oauth2 server with user information and forward the request with this token.
+- [basic2token](#basic2token): Give the ability to connect a user over basic auth, retrieve a token from an OAuth2 server with user information and forward the request with this token.
 - [basic auth](#basic-auth)
 - [casbin](#casbin): An authorization library that supports access control models like ACL, RBAC, ABAC
 - [cef trace](#cef-trace): Produce access log in CEF format for siem.
@@ -24,7 +24,7 @@ List:
 
 **Pro tip**:
 
-You can set multiple middleware params programmatically by using a dummy structure containing each config you wanna set, example:
+You can set multiple middleware params programmatically by using a dummy structure containing each config you want to set, example:
 
 ```go
 package main
@@ -66,9 +66,9 @@ func main() {
 
 ## Basic2Token
 
-Give the ability to connect an user over basic auth, retrieve a token from an oauth2 server with user information and forward the request with this token.
+Give the ability to connect a user over basic auth, retrieve a token from an OAuth2 server with user information and forward the request with this token.
 
-This was made to transparently convert a basic auth authentication to an oauth2 one.
+This was made to transparently convert a basic auth authentication to an OAuth2 one.
 
 See godoc for [Basic2TokenOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/basic2token#Basic2TokenOptions) to know more about parameters.
 
@@ -120,7 +120,7 @@ middleware_params:
 
 ### Tips
 
-- If key `scope` is found in the response of the oauth2 server, thoses scopes will be loaded as groups and others middlewares will
+- If key `scope` is found in the response of the oauth2 server, theses scopes will be loaded as groups and others middlewares will
  be able to find groups for the current user by using [context groups](https://godoc.org/github.com/orange-cloudfoundry/gobis#Groups)
 - Logged user is accessible by other middleware through [context username](https://godoc.org/github.com/orange-cloudfoundry/gobis#Username)
 
@@ -472,7 +472,7 @@ middleware_params:
 
 ## Infopage
 
-Add an endpoint on upstream to see information like headers set by gobis and user informations set by middlewares (Useful for frontend)
+Add an endpoint on upstream to see information like headers set by gobis and user information set by middlewares (Useful for frontend)
 
 See godoc for [CorsOptions](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares/infopage#InfoPageOptions) to know more about parameters.
 

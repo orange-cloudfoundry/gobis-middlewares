@@ -11,11 +11,11 @@ type TraceConfig struct {
 	Trace *TraceOptions `mapstructure:"trace" json:"trace" yaml:"trace"`
 }
 type TraceOptions struct {
-	// enable request and response capture
+	// Enabled enable request and response capture
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	// add request headers to capture
+	// RequestHeaders add request headers to capture
 	RequestHeaders []string `mapstructure:"request_headers" json:"request_headers" yaml:"request_headers"`
-	// add response headers to capture
+	// ResponseHeaders add response headers to capture
 	ResponseHeaders []string `mapstructure:"response_headers" json:"response_headers" yaml:"response_headers"`
 }
 type Trace struct{}

@@ -46,8 +46,8 @@ func (h Oauth2Handler) sessionHasToken(sess *sessions.Session) bool {
 	return sess.Values[tokenSessKey] != nil
 }
 
-// We check expiration only for issue in chromium: https://bugs.chromium.org/p/chromium/issues/detail?id=128513
-// We will handle it ourself
+// sessionHasExpired We check expiration only for issue in chromium: https://bugs.chromium.org/p/chromium/issues/detail?id=128513
+// We will handle it ourselves
 func (h Oauth2Handler) sessionHasExpired(sess *sessions.Session) bool {
 	if _, ok := sess.Values[expiresSessKey]; !ok {
 		return true
@@ -211,7 +211,7 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 	req.Header.Set("Authorization", tokenStr)
 	sess.Values[tokenSessKey] = tokenStr
 	// We set expiration only for issue in chromium: https://bugs.chromium.org/p/chromium/issues/detail?id=128513
-	// We will handle it ourself
+	// We will handle it ourselves
 	sess.Values[expiresSessKey] = token.Expiry.Format(timeLayout)
 
 	gobis.AddGroups(req, h.options.Scopes...)

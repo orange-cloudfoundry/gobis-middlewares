@@ -11,7 +11,7 @@ const (
 
 type MiddlewareOauth2ContextKey int
 
-// Set the username to a request context
+// setOauth2Client Set the username to a request context
 func setOauth2Client(req *http.Request, oauth2Client *http.Client) {
 	client := oauth2ClientPtr(req)
 	if client == nil {
@@ -20,7 +20,7 @@ func setOauth2Client(req *http.Request, oauth2Client *http.Client) {
 	}
 }
 
-// Retrieve username from a request context
+// Oauth2Client Retrieve username from a request context
 func Oauth2Client(req *http.Request) *http.Client {
 	return oauth2ClientPtr(req)
 }

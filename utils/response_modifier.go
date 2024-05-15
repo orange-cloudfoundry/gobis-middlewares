@@ -88,9 +88,7 @@ func cloneHttpHeader(headers http.Header) http.Header {
 	newHeaders := make(http.Header)
 	for k, vl := range headers {
 		newValues := make([]string, len(vl))
-		for i, v := range vl {
-			newValues[i] = v
-		}
+		copy(newValues, vl)
 		newHeaders[k] = newValues
 	}
 	return newHeaders

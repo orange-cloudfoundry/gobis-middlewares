@@ -12,11 +12,11 @@ type CircuitBreakerConfig struct {
 	CircuitBreaker *CircuitBreakerOptions `mapstructure:"circuit_breaker" json:"circuit_breaker" yaml:"circuit_breaker"`
 }
 type CircuitBreakerOptions struct {
-	// enable conn limit middleware
+	// Enabled enable conn limit middleware
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	// Limit number of simultaneous connection (default to 20)
+	// Expression Limit number of simultaneous connection (default to 20)
 	Expression string `mapstructure:"expression" json:"expression" yaml:"expression"`
-	// Identify request source to limit the source
+	// FallbackUrl Identify request source to limit the source
 	// possible value are 'client.ip', 'request.host' or 'request.header.X-My-Header-Name'
 	// (default: client.ip)
 	FallbackUrl string `mapstructure:"fallback_url" json:"fallback_url" yaml:"fallback_url"`

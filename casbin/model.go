@@ -39,13 +39,13 @@ type CasbinOption struct {
 type CasbinPolicy struct {
 	// Type of policy, with default config it can be p (target) or g (role)
 	Type string `mapstructure:"type" json:"type" yaml:"type"`
-	// Subject of the policy, this can be a username retrieve basic auth or a role name
-	// For example if use ldap middleware you can use username or a group where the user is member of
+	// Sub Subject of the policy. This can be a username retrieve basic auth or a role name.
+	// For example, when using LDAP middleware, you can use username or a group where the user is member of.
 	Sub string `mapstructure:"sub" json:"sub" yaml:"sub"`
-	// Object of the policy, with default perm config it will be the following path set in your route
+	// Obj Object of the policy, with default perm config it will be the following path set in your route
 	// e.g.: with path = "/app/**" object will be /* to allow everything after /app
 	Obj string `mapstructure:"obj" json:"obj" yaml:"obj"`
-	// Operation of the policy, with default config it will be an http method like GET, POST, ... or * for evything
+	// Act Operation of the policy, with default config it will be a HTTP method like GET, POST, ... or * for everything
 	Act string `mapstructure:"act" json:"act" yaml:"act"`
 }
 

@@ -17,17 +17,17 @@ type CefTraceConfig struct {
 }
 
 type CefTraceOptions struct {
-	// enable request and response capture
+	// Enabled enable request and response capture
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	// (Required) Device vendor
+	// DeviceVendor The Device vendor (Required)
 	DeviceVendor string `mapstructure:"device_vendor" json:"device_vendor" yaml:"device_vendor"`
-	// (Required) Device product
+	// DeviceProduct (Required)
 	DeviceProduct string `mapstructure:"device_product" json:"device_product" yaml:"device_product"`
-	// (Required) Device version
+	// DeviceVersion (Required)
 	DeviceVersion string `mapstructure:"device_version" json:"device_version" yaml:"device_version"`
-	// (Optional) Key Signature ID
+	// KeySignatureID (Optional)
 	KeySignatureID string `mapstructure:"key_signature_id" json:"key_signature_id" yaml:"key_signature_id"`
-	// Set to true to write in stderr instead of stdout
+	// InStderr Set to true to write in stderr instead of stdout
 	InStderr bool `mapstructure:"in_stderr" json:"in_stderr" yaml:"in_stderr"`
 }
 type CefTrace struct{}
