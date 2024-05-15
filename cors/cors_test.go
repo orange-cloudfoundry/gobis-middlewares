@@ -49,7 +49,7 @@ var _ = Describe("Cors", func() {
 			midTest.SetMiddlewareParams(struct {
 				cors.CorsConfig
 			}{cors.CorsConfig{
-				&cors.CorsOptions{
+				Cors: &cors.CorsOptions{
 					Enabled:        true,
 					AllowedMethods: []string{"POST"},
 				},

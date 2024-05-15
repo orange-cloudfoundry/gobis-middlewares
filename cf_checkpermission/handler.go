@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/orange-cloudfoundry/gobis-middlewares/oauth2"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -29,7 +29,6 @@ func (h CfCheckPermissionHandler) ServeHTTP(w http.ResponseWriter, req *http.Req
 	oauth2Client := oauth2.Oauth2Client(req)
 	if oauth2Client == nil {
 		panic("orange-cloudfoundry/gobis/middlewares: When enabling cf check permission, you must use oauth2 middleware with cloud_controller_service_permissions.read scope")
-		return
 	}
 	resp, err := oauth2Client.Get(fmt.Sprintf(
 		"%s/v2/service_instances/%s/permissions",
@@ -38,19 +37,16 @@ func (h CfCheckPermissionHandler) ServeHTTP(w http.ResponseWriter, req *http.Req
 	)
 	if err != nil {
 		panic(fmt.Sprintf("orange-cloudfoundry/gobis/middlewares: error when requesting cf check permission: %s", err.Error()))
-		return
 	}
 	defer resp.Body.Close()
-	b, _ := ioutil.ReadAll(resp.Body)
+	b, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
 		panic(fmt.Sprintf("orange-cloudfoundry/gobis/middlewares: error when requesting cf check permission: %s", string(b)))
-		return
 	}
 	var permResp CfPermissionResp
 	err = json.Unmarshal(b, &permResp)
 	if err != nil {
 		panic(fmt.Sprintf("orange-cloudfoundry/gobis/middlewares: error when when unmarshaling json response when cf checking permission: %s", err.Error()))
-		return
 	}
 
 	if h.options.OnlyManager && !permResp.Manage {

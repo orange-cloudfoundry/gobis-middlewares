@@ -12,15 +12,15 @@ type RateLimitConfig struct {
 	RateLimit *RateLimitOptions `mapstructure:"rate_limit" json:"rate_limit" yaml:"rate_limit"`
 }
 type RateLimitOptions struct {
-	// enable rate limit
+	// Enabled enable rate limit
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	// Limit number of requests (default to 5000)
 	Limit int64 `mapstructure:"limit" json:"limit" yaml:"limit"`
-	// Number of seconds when the limit will be reset (default to 1800)
+	// ResetTime Number of seconds when the limit will be reset (default to 1800)
 	ResetTime int64 `mapstructure:"reset_time" json:"reset_time" yaml:"reset_time"`
-	// Identify request source to limit the source
+	// SourceIdentifier Identify request source to limit the source
 	// possible value are 'client.ip', 'request.host' or 'request.header.X-My-Header-Name'
-	// if empty and a username exists in context the source will be set to this content (this allow to rate limit by username from auth middleware)
+	// if empty and a username exists in context the source will be set to this content (this allows to rate limit by username from auth middleware)
 	// for context see: https://godoc.org/github.com/orange-cloudfoundry/gobis/proxy/ctx#Username
 	SourceIdentifier string `mapstructure:"source_identifier" json:"source_identifier" yaml:"source_identifier"`
 }

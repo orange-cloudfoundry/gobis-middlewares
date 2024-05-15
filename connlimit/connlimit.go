@@ -11,14 +11,14 @@ type ConnLimitConfig struct {
 	ConnLimit *ConnLimitOptions `mapstructure:"conn_limit" json:"conn_limit" yaml:"conn_limit"`
 }
 type ConnLimitOptions struct {
-	// enable conn limit middleware
+	// Enabled enable conn limit middleware
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	// Limit number of simultaneous connection (default to 20)
 	Limit int64 `mapstructure:"limit" json:"limit" yaml:"limit"`
-	// Identify request source to limit the source
+	// SourceIdentifier Identify request source to limit the source
 	// possible value are 'client.ip', 'request.host' or 'request.header.X-My-Header-Name'
 	// (default: client.ip)
-	// if empty and a username exists in context the source will be set to this content (this allow to conn limit by username from auth middleware)
+	// if empty and a username exists in context, the source will be set to this content (this allows to limit connections by the username from the auth middleware)
 	// for context see: https://godoc.org/github.com/orange-cloudfoundry/gobis/proxy/ctx#Username
 	SourceIdentifier string `mapstructure:"source_identifier" json:"source_identifier" yaml:"source_identifier"`
 }

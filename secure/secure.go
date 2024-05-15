@@ -10,15 +10,15 @@ type SecureConfig struct {
 	Secure *SecureOptions `mapstructure:"secure" json:"secure" yaml:"secure"`
 }
 type SecureOptions struct {
-	// enable Secure
+	// Enabled enable Secure
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
 	// AllowedHosts is a list of fully qualified domain names that are allowed. Default is empty list, which allows any and all host names.
 	AllowedHosts []string `mapstructure:"allowed_hosts" json:"allowed_hosts" yaml:"allowed_hosts"`
 	// HostsProxyHeaders is a set of header keys that may hold a proxied hostname value for the request.
 	HostsProxyHeaders []string `mapstructure:"hosts_proxy_headers" json:"hosts_proxy_headers" yaml:"hosts_proxy_headers"`
-	// If SSLRedirect is set to true, then only allow https requests. Default is false.
+	// SSLRedirect When set to true, then only allow HTTPS requests. Default is false.
 	SSLRedirect bool `mapstructure:"ssl_redirect" json:"ssl_redirect" yaml:"ssl_redirect"`
-	// If SSLTemporaryRedirect is true, the a 302 will be used while redirecting. Default is false (301).
+	// SSLTemporaryRedirect When true, a 302 will be used while redirecting. Default is false (301).
 	SSLTemporaryRedirect bool `mapstructure:"ssl_temporary_redirect" json:"ssl_temporary_redirect" yaml:"ssl_temporary_redirect"`
 	// SSLHost is the host name that is used to redirect http requests to https. Default is "", which indicates to use the same host.
 	SSLHost string `mapstructure:"ssl_host" json:"ssl_host" yaml:"ssl_host"`
@@ -26,19 +26,19 @@ type SecureOptions struct {
 	SSLProxyHeaders map[string]string `mapstructure:"ssl_proxy_headers" json:"ssl_proxy_headers" yaml:"ssl_proxy_headers"`
 	// STSSeconds is the max-age of the Strict-Transport-Security header. Default is 0, which would NOT include the header.
 	STSSeconds int64 `mapstructure:"sts_seconds" json:"sts_seconds" yaml:"sts_seconds"`
-	// If STSIncludeSubdomains is set to true, the `includeSubdomains` will be appended to the Strict-Transport-Security header. Default is false.
+	// STSIncludeSubdomains When set to true, the `includeSubdomains` will be appended to the Strict-Transport-Security header. Default is false.
 	STSIncludeSubdomains bool `mapstructure:"sts_include_subdomains" json:"sts_include_subdomains" yaml:"sts_include_subdomains"`
-	// If STSPreload is set to true, the `preload` flag will be appended to the Strict-Transport-Security header. Default is false.
+	// STSPreload When set to true, the `preload` flag will be appended to the Strict-Transport-Security header. Default is false.
 	STSPreload bool `mapstructure:"sts_preload" json:"sts_preload" yaml:"sts_preload"`
-	// If ForceSTSHeader is set to true, the STS header will be added even when the connection is HTTP. Default is false.
+	// ForceSTSHeader When set to true, the STS header will be added even when the connection is HTTP. Default is false.
 	ForceSTSHeader bool `mapstructure:"force_sts_header" json:"force_sts_header" yaml:"force_sts_header"`
-	// If FrameDeny is set to true, adds the X-Frame-Options header with the value of `DENY`. Default is false.
+	// FrameDeny When set to true, adds the X-Frame-Options header with the value of `DENY`. Default is false.
 	FrameDeny bool `mapstructure:"frame_deny" json:"frame_deny" yaml:"frame_deny"`
 	// CustomFrameOptionsValue allows the X-Frame-Options header value to be set with a custom value. This overrides the FrameDeny option. Default is "".
 	CustomFrameOptionsValue string `mapstructure:"custom_frame_options_value" json:"custom_frame_options_value" yaml:"custom_frame_options_value"`
-	// If ContentTypeNosniff is true, adds the X-Content-Type-Options header with the value `nosniff`. Default is false.
+	// ContentTypeNosniff When true, adds the X-Content-Type-Options header with the value `nosniff`. Default is false.
 	ContentTypeNosniff bool `mapstructure:"content_type_nosniff" json:"content_type_nosniff" yaml:"content_type_nosniff"`
-	// If BrowserXssFilter is true, adds the X-XSS-Protection header with the value `1; mode=block`. Default is false.
+	// BrowserXssFilter When true, adds the X-XSS-Protection header with the value `1; mode=block`. Default is false.
 	BrowserXssFilter bool `mapstructure:"browser_xss_filter" json:"browser_xss_filter" yaml:"browser_xss_filter"`
 	// CustomBrowserXssValue allows the X-XSS-Protection header value to be set with a custom value. This overrides the BrowserXssFilter option. Default is "".
 	CustomBrowserXssValue string `mapstructure:"custom_browser_xss_value" json:"custom_browser_xss_value" yaml:"custom_browser_xss_value"`
@@ -46,9 +46,9 @@ type SecureOptions struct {
 	ContentSecurityPolicy string `mapstructure:"content_security_policy" json:"content_security_policy" yaml:"content_security_policy"`
 	// PublicKey implements HPKP to prevent MITM attacks with forged certificates. Default is "".
 	PublicKey string `mapstructure:"public_key" json:"public_key" yaml:"public_key"`
-	// Referrer Policy allows sites to control when browsers will pass the Referer header to other sites. Default is "".
+	// ReferrerPolicy Allows sites to control when browsers will pass the Referer header to other sites. Default is "".
 	ReferrerPolicy string `mapstructure:"referrer_policy" json:"referrer_policy" yaml:"referrer_policy"`
-	// When developing, the AllowedHosts, SSL, and STS options can cause some unwanted effects. Usually testing happens on http, not https, and on localhost, not your production domain... so set this to true for dev environment.
+	// IsDevelopment When developing, the AllowedHosts, SSL, and STS options can cause some unwanted effects. Usually testing happens on http, not https, and on localhost, not your production domain... so set this to true for dev environment.
 	// If you would like your development environment to mimic production with complete Host blocking, SSL redirects, and STS headers, leave this as false. Default if false.
 	IsDevelopment bool `mapstructure:"is_development" json:"is_development" yaml:"is_development"`
 }
@@ -71,7 +71,6 @@ func (o SecureOptions) ToSecureOptions() secure.Options {
 		BrowserXssFilter:        o.BrowserXssFilter,
 		CustomBrowserXssValue:   o.CustomBrowserXssValue,
 		ContentSecurityPolicy:   o.ContentSecurityPolicy,
-		PublicKey:               o.PublicKey,
 		ReferrerPolicy:          o.ReferrerPolicy,
 		IsDevelopment:           o.IsDevelopment,
 	}

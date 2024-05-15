@@ -26,7 +26,7 @@ func requiredVal(data interface{}, paramsName string) error {
 	if !elemIsEmpty(data) {
 		return nil
 	}
-	return fmt.Errorf("%s cannot be empty.", paramsName)
+	return fmt.Errorf("%s cannot be empty", paramsName)
 }
 
 func CondVal(data, value interface{}) interface{} {
@@ -49,8 +49,5 @@ func elemIsEmpty(data interface{}) bool {
 		return valueData.Len() == 0
 	}
 	zeroVal := reflect.Zero(typeData)
-	if zeroVal.Interface() == valueData.Interface() {
-		return true
-	}
-	return false
+	return zeroVal.Interface() == valueData.Interface()
 }

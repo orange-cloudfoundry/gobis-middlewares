@@ -21,32 +21,32 @@ type LdapConfig struct {
 	Ldap *LdapOptions `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
 }
 type LdapOptions struct {
-	// enable ldap basic auth middleware
+	// Enabled enable LDAP basic auth middleware
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	// Search user bind dn (Can be set by env var `LDAP_BIND_DN`)
+	// BindDn Search user bind dn (Can be set by env var `LDAP_BIND_DN`)
 	BindDn string `mapstructure:"bind_dn" json:"bind_dn" yaml:"bind_dn"`
-	// Search user bind password (Can be set by env var `LDAP_BIND_PASSWORD`)
+	// BindPassword Search user bind password (Can be set by env var `LDAP_BIND_PASSWORD`)
 	BindPassword string `mapstructure:"bind_password" json:"bind_password" yaml:"bind_password"`
-	// Ldap server address in the form of host:port (Can be set by env var `LDAP_BIND_ADDRESS`)
+	// Address LDAP server address in the form of host:port (Can be set by env var `LDAP_BIND_ADDRESS`)
 	Address string `mapstructure:"address" json:"address" yaml:"address"`
-	// Set to true if ldap server supports TLS
+	// UseSsl Set to true if ldap server supports TLS
 	UseSsl bool `mapstructure:"use_ssl" json:"use_ssl" yaml:"use_ssl"`
-	// Set to true to skip certificate check (NOT RECOMMENDED)
+	// InsecureSkipVerify Set to true to skip certificate check (NOT RECOMMENDED)
 	InsecureSkipVerify bool `mapstructure:"insecure_skip_verify" json:"insecure_skip_verify" yaml:"insecure_skip_verify"`
-	// base dns to search through (Default: `dc=com`)
+	// SearchBaseDns base dns to search through (Default: `dc=com`)
 	SearchBaseDns string `mapstructure:"search_base_dns" json:"search_base_dns" yaml:"search_base_dns"`
-	// User search filter, for example "(cn=%s)" or "(sAMAccountName=%s)" or "(uid=%s)" (default: `(objectClass=organizationalPerson)&(uid=%s)`)
+	// SearchFilter User search filter, for example "(cn=%s)" or "(sAMAccountName=%s)" or "(uid=%s)" (default: `(objectClass=organizationalPerson)&(uid=%s)`)
 	SearchFilter string `mapstructure:"search_filter" json:"search_filter" yaml:"search_filter"`
-	// Group search filter, to retrieve the groups of which the user is a member
+	// GroupSearchFilter Group search filter, to retrieve the groups of which the user is a member
 	// Groups will be passed in request context as a list of strings, how to retrieve: ctx.Groups(*http.Request)
 	// if GroupSearchFilter or GroupSearchBaseDns or MemberOf are empty it will not search for groups
 	GroupSearchFilter string `mapstructure:"group_search_filter" json:"group_search_filter" yaml:"group_search_filter"`
-	// base DNs to search through for groups
+	// GroupSearchBaseDns base DNs to search through for groups
 	GroupSearchBaseDns string `mapstructure:"group_search_base_dns" json:"group_search_base_dns" yaml:"group_search_base_dns"`
-	// Search group name by this value (default: `memberOf`)
+	// MemberOf Search group name by this value (default: `memberOf`)
 	MemberOf string `mapstructure:"member_of" json:"member_of" yaml:"member_of"`
-	// Passthrough if a previous middleware already set user context
-	// This is helpful when you want add user with basic auth middleware
+	// TrustCurrentUser Passthrough if a previous middleware already set user context
+	// This is helpful when you want to add a user with basic auth middleware
 	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
 }
 type LdapAuth struct {
@@ -79,7 +79,6 @@ func (l LdapAuth) LdapAuth(user, password string, req *http.Request) bool {
 	conn, err := l.CreateConn()
 	if err != nil {
 		panic(fmt.Sprintf("orange-cloudfoundry/gobis/middlewares: invalid ldap for '%s': %s", l.Address, err.Error()))
-		return false
 	}
 	defer conn.Close()
 	searchRequest := ldap.NewSearchRequest(
@@ -93,7 +92,6 @@ func (l LdapAuth) LdapAuth(user, password string, req *http.Request) bool {
 	sr, err := conn.Search(searchRequest)
 	if err != nil {
 		panic(fmt.Sprintf("orange-cloudfoundry/gobis/middlewares: invalid ldap search for '%s': %s", l.Address, err.Error()))
-		return false
 	}
 
 	if len(sr.Entries) != 1 {
@@ -110,7 +108,6 @@ func (l LdapAuth) LdapAuth(user, password string, req *http.Request) bool {
 	err = l.LoadLdapGroup(user, conn, req)
 	if err != nil {
 		panic(fmt.Sprintf("orange-cloudfoundry/gobis/middlewares: invalid ldap group search for '%s': %s", l.Address, err.Error()))
-		return false
 	}
 	gobis.SetUsername(req, user)
 	return true

@@ -3,6 +3,7 @@ package basicauth
 import (
 	"crypto/sha256"
 	"crypto/subtle"
+	"errors"
 	"fmt"
 	"github.com/goji/httpauth"
 	"github.com/orange-cloudfoundry/gobis"
@@ -40,7 +41,8 @@ func (b BasicAuthOptions) Auth(user, password string, passthrough bool, req *htt
 		if err == nil {
 			return true
 		}
-		if _, ok := err.(blowfish.KeySizeError); ok {
+		var keySizeError blowfish.KeySizeError
+		if errors.As(err, &keySizeError) {
 			panic(fmt.Sprintf(
 				"orange-cloudfoundry/gobis/middlewares: Basic auth middleware, invalid crypted password for user '%s': %s",
 				foundUser.User,

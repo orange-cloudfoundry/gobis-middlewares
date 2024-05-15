@@ -4,8 +4,8 @@ import (
 	"crypto/subtle"
 	"fmt"
 	"github.com/auth0/go-jwt-middleware"
-	"github.com/dgrijalva/jwt-go"
 	f3jwt "github.com/form3tech-oss/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/orange-cloudfoundry/gobis"
 	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
 	log "github.com/sirupsen/logrus"
@@ -18,27 +18,27 @@ type JwtConfig struct {
 	Jwt *JwtOptions `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
 }
 type JwtOptions struct {
-	// enable jwt middleware
+	// Enabled enable jwt middleware
 	Enabled bool `mapstructure:"enabled" json:"enabled" yaml:"enabled"`
-	// Algorithm to use to validate the token
+	// Alg Algorithm to use to validate the token
 	// This is mandatory due to a security issue (see: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries)
 	Alg string `mapstructure:"alg" json:"alg" yaml:"alg"`
 	// Secret or private key to verify the jwt
 	// This is required
 	Secret string `mapstructure:"secret" json:"secret" yaml:"secret"`
-	// When set, all requests with the OPTIONS method will use authentication
+	// EnableAuthOnOptions When set, all requests with the OPTIONS method will use authentication
 	// Default: false
 	EnableAuthOnOptions bool `mapstructure:"enable_auth_on_options" json:"enable_auth_on_options" yaml:"enable_auth_on_options"`
-	// If not empty, it will validate that the jwt contains this audience
+	// Audience If not empty, it will validate that the jwt contains this audience
 	Audience string `mapstructure:"audience" json:"audience" yaml:"audience"`
-	// If not empty, it will validate that the jwt contains this issuer
+	// Issuer If not empty, it will validate that the jwt contains this issuer
 	Issuer string `mapstructure:"issuer" json:"issuer" yaml:"issuer"`
-	// Add custom check to verify that the jwt contains those specified claims with specified value
+	// CustomVerify Add custom check to verify that the jwt contains those specified claims with specified value
 	CustomVerify map[string]string `mapstructure:"custom_verify" json:"custom_verify" yaml:"custom_verify"`
-	// Set to true to not verify issued at of token (Useful when you have different time between user and server)
+	// NotVerifyIssuedAt Set to true to not verify issued at of token (Useful when you have different time between user and server)
 	NotVerifyIssuedAt bool `mapstructure:"not_verify_expire" json:"not_verify_expire" yaml:"not_verify_expire"`
-	// Passthrough if a previous middleware already set user context
-	// This is helpful when you want add user with basic auth middleware
+	// TrustCurrentUser Passthrough if a previous middleware already set user context
+	// This is helpful when you want to add a user with basic auth middleware
 	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
 }
 
@@ -62,7 +62,7 @@ func (Jwt) Handler(proxyRoute gobis.ProxyRoute, params interface{}, handler http
 	}
 	signingMethod := jwt.GetSigningMethod(options.Alg)
 	if signingMethod == nil {
-		return handler, fmt.Errorf("algorithm '%s' doesn't exists.", options.Alg)
+		return handler, fmt.Errorf("algorithm '%s' doesn't exists", options.Alg)
 	}
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *f3jwt.Token) (interface{}, error) {
@@ -146,15 +146,15 @@ func checkTokenfunc(token *f3jwt.Token, options *JwtOptions, signingMethod jwt.S
 		return nil, err
 	}
 	if !verifyAudience(mapClaims, options.Audience) {
-		return nil, fmt.Errorf("Token doesn't contains the requested audience.")
+		return nil, fmt.Errorf("token doesn't contains the requested audience")
 	}
 	if options.Issuer != "" && !mapClaims.VerifyIssuer(options.Issuer, true) {
-		return nil, fmt.Errorf("Token doesn't contains the requested issuer.")
+		return nil, fmt.Errorf("token doesn't contains the requested issuer")
 	}
 	for k, v := range options.CustomVerify {
 		if mapClaims[k] == nil ||
 			subtle.ConstantTimeCompare([]byte(v), []byte(fmt.Sprint(mapClaims[k]))) == 0 {
-			return nil, fmt.Errorf("Token doesn't contains the requested %s.", k)
+			return nil, fmt.Errorf("token doesn't contains the requested %s", k)
 		}
 	}
 	return getSecretEncoded(options.Secret, signingMethod)

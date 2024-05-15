@@ -8,7 +8,6 @@ import (
 	"github.com/orange-cloudfoundry/gobis"
 	"github.com/orange-cloudfoundry/gobis-middlewares/utils"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -19,23 +18,23 @@ type Basic2TokenConfig struct {
 }
 type Basic2TokenOptions struct {
 	utils.ClientRouteOption `mapstructure:",squash"`
-	// Uri to retrieve access token e.g.: https://my.uaa.local/oauth/token
+	// AccessTokenUri Uri to retrieve access token e.g.: https://my.uaa.local/oauth/token
 	AccessTokenUri string `mapstructure:"access_token_uri" json:"access_token_uri" yaml:"access_token_uri"`
-	// Client id which will connect user on behalf him
+	// ClientId Client id which will connect user on behalf him
 	ClientId string `mapstructure:"client_id" json:"client_id" yaml:"client_id"`
-	// Client secret which will connect user on behalf him
+	// ClientSecret Client secret which will connect user on behalf him
 	ClientSecret string `mapstructure:"client_secret" json:"client_secret" yaml:"client_secret"`
-	// Some oauth server can be configured to use a different of token
-	// if you want an opaque token from uaa you will set this value to "opaque"
+	// TokenFormat Some OAuth servers can be configured to use a different token format;
+	// if you want an opaque token from UAA you will set this value to "opaque"
 	TokenFormat string `mapstructure:"token_format" json:"token_format" yaml:"token_format"`
-	// Permit to basic2token to detect if a oauth token has been already set
+	// TokenType Permit to basic2token to detect if a oauth token has been already set
 	// If token was already given it will forward to the next handler without trying to acquire a new token
 	// Default: bearer
 	TokenType string `mapstructure:"token_type" json:"token_type" yaml:"token_type"`
-	// By default request token is sent by post form, set to true to send as json
+	// ParamsAsJson By default request token is sent by post form, set to true to send as JSON
 	ParamsAsJson bool `mapstructure:"params_as_json" json:"params_as_json" yaml:"params_as_json"`
-	// Passthrough if a previous middleware already set user context
-	// This is helpful when you want add user with basic auth middleware
+	// TrustCurrentUser Passthrough if a previous middleware already set user context
+	// This is helpful when you want to add a user with basic auth middleware
 	TrustCurrentUser bool `mapstructure:"trust_current_user" json:"trust_current_user" yaml:"trust_current_user"`
 }
 type AccessTokenResponse struct {
@@ -73,26 +72,22 @@ func (a Basic2TokenAuth) Auth(user, password string, origRequest *http.Request) 
 	resp, err := a.client.Do(req)
 	if err != nil {
 		panic(fmt.Sprintf("Error when getting token for %s: %s", user, err.Error()))
-		return false
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		if resp.StatusCode == 401 || resp.StatusCode == 403 {
 			return false
 		}
-		b, _ := ioutil.ReadAll(resp.Body)
+		b, _ := io.ReadAll(resp.Body)
 		panic(fmt.Sprintf("Error from oauth server %d: %s", resp.StatusCode, string(b)))
-		return false
 	}
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		panic(fmt.Sprintf("Error when getting token for %s: %s", user, err.Error()))
-		return false
 	}
 	var accessResp AccessTokenResponse
 	err = json.Unmarshal(b, &accessResp)
 	if err != nil {
 		panic(fmt.Sprintf("Error when getting token for %s: %s", user, err.Error()))
-		return false
 	}
 	tokenType := accessResp.TokenType
 	if tokenType == "" {
