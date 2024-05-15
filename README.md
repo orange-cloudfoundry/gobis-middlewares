@@ -25,39 +25,42 @@ List:
 **Pro tip**:
 
 You can set multiple middleware params programmatically by using a dummy structure containing each config you wanna set, example:
+
 ```go
 package main
+
 import (
-    "github.com/orange-cloudfoundry/gobis-middlewares/trace"
-    "github.com/orange-cloudfoundry/gobis-middlewares/cors"
-    "github.com/orange-cloudfoundry/gobis"
+ "github.com/orange-cloudfoundry/gobis"
+ "github.com/orange-cloudfoundry/gobis-middlewares/cors"
+ "github.com/orange-cloudfoundry/gobis-middlewares/trace"
 )
-func main(){
-    configHandler := gobis.DefaultHandlerConfig{
-            Routes: []gobis.ProxyRoute{
-                {
-                    Name: "myapi",
-                    Path: "/app/**",
-                    Url: "http://www.mocky.io/v2/595625d22900008702cd71e8",
-                    MiddlewareParams: struct {
-                        trace.TraceConfig
-                        cors.CorsConfig
-                    }{
-                        TraceConfig: trace.TraceConfig{
-                            Trace: &trace.TraceOptions{
-                                Enabled: true,
-                            },
-                        },
-                        CorsConfig: cors.CorsConfig{
-                            Cors: &cors.CorsOptions{
-                                Enabled: true,
-                            },
-                        },
-                    },
-                },
-            },
-    }
-    gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(trace.NewTrace(), cors.NewCors()))
+
+func main() {
+ configHandler := gobis.DefaultHandlerConfig{
+  Routes: []gobis.ProxyRoute{
+   {
+    Name: "myapi",
+    Path: "/app/**",
+    Url:  "http://www.mocky.io/v2/595625d22900008702cd71e8",
+    MiddlewareParams: struct {
+     trace.TraceConfig
+     cors.CorsConfig
+    }{
+     TraceConfig: trace.TraceConfig{
+      Trace: &trace.TraceOptions{
+       Enabled: true,
+      },
+     },
+     CorsConfig: cors.CorsConfig{
+      Cors: &cors.CorsOptions{
+       Enabled: true,
+      },
+     },
+    },
+   },
+  },
+ }
+ gobisHandler, err := gobis.NewDefaultHandler(configHandler, gobis.NewRouterFactory(trace.NewTrace(), cors.NewCors()))
 }
 ```
 
