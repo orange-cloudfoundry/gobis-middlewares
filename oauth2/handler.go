@@ -117,7 +117,6 @@ func (h Oauth2Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	authUrl := h.oauth2Conf.AuthCodeURL(stateCode, authCodeOpt...)
 	http.Redirect(w, req, authUrl, 302)
-	return
 }
 
 func (h Oauth2Handler) serveNext(w http.ResponseWriter, req *http.Request, sess *sessions.Session) {
@@ -175,7 +174,6 @@ func (h Oauth2Handler) LogoutHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	http.Redirect(w, req, redirectUrl, 302)
-	return
 }
 
 func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
@@ -236,7 +234,6 @@ func (h Oauth2Handler) LoginHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	http.Redirect(w, req, redirectUrl, 302)
-	return
 }
 
 func (h Oauth2Handler) retrieveUserInfo(req *http.Request, c *http.Client) {
