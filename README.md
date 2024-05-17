@@ -1,5 +1,7 @@
 # Gobis-middlewares [![GoDoc](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares?status.svg)](https://godoc.org/github.com/orange-cloudfoundry/gobis-middlewares)
 
+**Note**: This repository has been archived.
+
 This is a set of middlewares created for [gobis](https://github.com/orange-cloudfoundry/gobis) usable on your on project containing gobis.
 
 **Note**: They are loaded by default on [gobis-server](https://github.com/orange-cloudfoundry/gobis-server)
